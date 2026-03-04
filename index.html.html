@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mihle Vuyo Mtotywa — IT Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300;1,600&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #08080d;
+  --surface:  #0e0e16;
+  --card:     #12121c;
+  --card2:    #161622;
+  --accent:   #c8f060;
+  --accent2:  #60c8f0;
+  --accent3:  #f060c8;
+  --text:     #eeeef5;
+  --muted:    #54546a;
+  --border:   #1c1c2e;
+  --glow:     rgba(200,240,96,0.12);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ─── CURSOR ─── */
+#cur  { width:8px;height:8px;background:var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transition:transform .1s; }
+#cur2 { width:32px;height:32px;border:1px solid var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .25s ease;opacity:.5; }
+
+/* ─── NOISE ─── */
+body::after {
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:9000;opacity:.35;
+}
+
+/* ─── NAV ─── */
+nav {
+  position:fixed;top:0;left:0;right:0;
+  padding:1.2rem 4rem;
+  display:flex;justify-content:space-between;align-items:center;
+  z-index:500;
+  background:rgba(8,8,13,.88);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.logo {
+  font-family:'Fraunces',serif;
+  font-size:1.2rem;font-weight:900;font-style:italic;
+  color:var(--accent);letter-spacing:-.02em;
+}
+.nav-links { display:flex;gap:2.5rem;list-style:none; }
+.nav-links a {
+  color:var(--muted);font-size:.68rem;letter-spacing:.15em;
+  text-transform:uppercase;text-decoration:none;transition:color .2s;
+}
+.nav-links a:hover { color:var(--accent); }
+
+/* ─── HERO ─── */
+.hero {
+  min-height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;
+  align-items:center;
+  padding:9rem 4rem 5rem;
+  position:relative;overflow:hidden;gap:4rem;
+}
+
+/* animated diagonal gradient bg */
+.hero::before {
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 50%, rgba(200,240,96,.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 20% 80%, rgba(96,200,240,.04) 0%, transparent 60%);
+  animation:bgShift 12s ease-in-out infinite alternate;
+}
+@keyframes bgShift {
+  0%  { opacity:.6; transform:scale(1); }
+  100%{ opacity:1;  transform:scale(1.05); }
+}
+
+/* grid lines */
+.hero-grid {
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(200,240,96,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(200,240,96,.025) 1px, transparent 1px);
+  background-size:72px 72px;
+}
+
+.hero-left { position:relative;z-index:2; }
+
+.hero-badge {
+  display:inline-flex;align-items:center;gap:.5rem;
+  font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent);border:1px solid rgba(200,240,96,.25);
+  padding:.35rem .9rem;border-radius:2px;margin-bottom:2rem;
+  animation:fadeUp .7s ease both;
+}
+.badge-dot { width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 2s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.2} }
+
+.hero-name {
+  font-family:'Fraunces',serif;
+  font-size:clamp(3.2rem,6vw,6rem);
+  font-weight:900;line-height:.92;
+  letter-spacing:-.04em;
+  margin-bottom:1.8rem;
+  animation:fadeUp .7s .08s ease both;
+}
+.hero-name em { font-style:italic;color:var(--accent); }
+.hero-name .dim { color:var(--muted); }
+
+.hero-desc {
+  font-size:.82rem;line-height:1.9;
+  color:rgba(238,238,245,.55);
+  max-width:480px;margin-bottom:2.5rem;
+  animation:fadeUp .7s .16s ease both;
+}
+
+.hero-ctas {
+  display:flex;gap:1rem;flex-wrap:wrap;
+  animation:fadeUp .7s .24s ease both;
+}
+
+.btn {
+  font-family:'Fraunces',serif;font-weight:600;font-size:.8rem;
+  letter-spacing:.08em;text-decoration:none;
+  padding:.85rem 2.2rem;border-radius:2px;
+  transition:all .25s;display:inline-block;
+}
+.btn-solid {
+  background:var(--accent);color:var(--bg);
+}
+.btn-solid:hover {
+  background:#fff;transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(200,240,96,.25);
+}
+.btn-outline {
+  border:1px solid var(--border);color:var(--muted);
+}
+.btn-outline:hover {
+  border-color:var(--accent);color:var(--accent);
+  transform:translateY(-2px);
+}
+
+/* hero right — floating card */
+.hero-right {
+  position:relative;z-index:2;
+  animation:fadeUp .7s .3s ease both;
+}
+
+.hero-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:2rem;
+  position:relative;
+  overflow:hidden;
+}
+.hero-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));
+}
+
+.hc-label {
+  font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:1.5rem;
+}
+
+.hc-stat {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:.8rem 0;border-bottom:1px solid var(--border);
+}
+.hc-stat:last-child { border:none; }
+.hc-stat-name { font-size:.72rem;color:rgba(238,238,245,.6); }
+.hc-stat-val  { font-size:.72rem;color:var(--accent);font-weight:400; }
+
+.hc-tags {
+  display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;
+}
+.hc-tag {
+  font-size:.58rem;letter-spacing:.1em;
+  border:1px solid var(--border);
+  color:var(--muted);padding:.2rem .6rem;border-radius:2px;
+}
+
+/* ─── MARQUEE ─── */
+.marquee-wrap {
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  background:var(--surface);
+  overflow:hidden;padding:.9rem 0;
+}
+.marquee-track {
+  display:flex;gap:3rem;white-space:nowrap;
+  animation:marquee 22s linear infinite;
+}
+@keyframes marquee { 0%{transform:translateX(0)}100%{transform:translateX(-50%)} }
+.marquee-item {
+  font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);flex-shrink:0;
+  display:flex;align-items:center;gap:.8rem;
+}
+.marquee-item span { color:var(--accent);font-size:.8rem; }
+
+/* ─── SECTION COMMONS ─── */
+section { padding:7rem 4rem; }
+.sec-header {
+  display:flex;align-items:center;gap:1rem;margin-bottom:4rem;
+}
+.sec-num {
+  font-size:.6rem;color:var(--accent);
+  letter-spacing:.2em;font-family:'DM Mono',monospace;
+}
+.sec-title {
+  font-family:'Fraunces',serif;
+  font-size:2.2rem;font-weight:900;
+  letter-spacing:-.03em;font-style:italic;
+}
+.sec-line { flex:1;height:1px;background:var(--border); }
+
+/* ─── PROJECTS ─── */
+#projects { background:var(--surface);border-top:1px solid var(--border); }
+
+.projects-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(360px,1fr));
+  gap:1px;background:var(--border);
+  border:1px solid var(--border);
+}
+
+.proj {
+  background:var(--card);padding:2.5rem;
+  text-decoration:none;color:inherit;
+  display:flex;flex-direction:column;
+  position:relative;overflow:hidden;
+  transition:background .25s,transform .25s;
+  opacity:0;transform:translateY(24px);
+  transition:opacity .6s ease, transform .6s ease, background .25s;
+}
+.proj.visible { opacity:1;transform:translateY(0); }
+.proj:hover { background:var(--card2); }
+
+/* top accent line per project */
+.proj::after {
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .35s ease;
+}
+.proj:hover::after { transform:scaleX(1); }
+.proj.c1::after { background:var(--accent); }
+.proj.c2::after { background:var(--accent2); }
+.proj.c3::after { background:var(--accent3); }
+.proj.c4::after { background:#f0a060; }
+.proj.c5::after { background:#a060f0; }
+
+.proj-header {
+  display:flex;align-items:flex-start;
+  justify-content:space-between;margin-bottom:1rem;
+}
+
+.proj-icon { font-size:1.8rem;line-height:1; }
+
+.proj-lang {
+  font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:.25rem .6rem;border-radius:2px;
+  font-family:'DM Mono',monospace;
+}
+.l-sql  { background:rgba(200,240,96,.1); color:var(--accent);  border:1px solid rgba(200,240,96,.25); }
+.l-vb   { background:rgba(96,200,240,.1); color:var(--accent2); border:1px solid rgba(96,200,240,.25); }
+.l-web  { background:rgba(240,96,200,.1); color:var(--accent3); border:1px solid rgba(240,96,200,.25); }
+.l-oop  { background:rgba(240,160,96,.1); color:#f0a060;        border:1px solid rgba(240,160,96,.25); }
+.l-html { background:rgba(160,96,240,.1); color:#a060f0;        border:1px solid rgba(160,96,240,.25); }
+
+.proj-name {
+  font-family:'Fraunces',serif;
+  font-size:1.25rem;font-weight:700;font-style:italic;
+  letter-spacing:-.02em;margin-bottom:.3rem;
+}
+
+.proj-repo {
+  font-size:.6rem;color:var(--muted);
+  letter-spacing:.05em;margin-bottom:1.2rem;
+}
+
+/* WHAT IT IS */
+.proj-what {
+  font-size:.68rem;font-weight:400;
+  color:var(--accent);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:.4rem;
+}
+
+.proj-desc {
+  font-size:.75rem;line-height:1.85;
+  color:rgba(238,238,245,.55);
+  margin-bottom:1.4rem;flex:1;
+}
+
+.proj-bullets {
+  list-style:none;margin-bottom:1.4rem;
+}
+.proj-bullets li {
+  font-size:.7rem;line-height:1.7;
+  color:rgba(238,238,245,.45);
+  padding-left:1rem;position:relative;
+  margin-bottom:.25rem;
+}
+.proj-bullets li::before {
+  content:'›';position:absolute;left:0;
+  color:var(--accent);
+}
+
+.proj-tags {
+  display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.4rem;
+}
+.ptag {
+  font-size:.58rem;letter-spacing:.08em;
+  color:var(--muted);border:1px solid var(--border);
+  padding:.15rem .5rem;border-radius:2px;
+}
+
+.proj-cta {
+  font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent);display:flex;align-items:center;gap:.5rem;
+  margin-top:auto;transition:gap .2s;
+}
+.proj:hover .proj-cta { gap:.8rem; }
+
+/* ─── SKILLS ─── */
+.skills-layout {
+  display:grid;grid-template-columns:1fr 1fr;gap:1px;
+  background:var(--border);border:1px solid var(--border);
+}
+
+.skill-group {
+  background:var(--card);padding:2rem;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.skill-group.visible { opacity:1;transform:translateY(0); }
+
+.sg-title {
+  font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:1.5rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.sg-title::after { content:'';flex:1;height:1px;background:rgba(200,240,96,.15); }
+
+.sk {
+  display:flex;align-items:center;
+  gap:.8rem;margin-bottom:.85rem;
+}
+.sk-dot {
+  width:5px;height:5px;border-radius:50%;flex-shrink:0;
+}
+.sk-name { font-size:.73rem;color:rgba(238,238,245,.6); }
+
+/* ─── CERTS ─── */
+#certifications { background:var(--surface);border-top:1px solid var(--border); }
+
+.certs-grid {
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:1px;background:var(--border);border:1px solid var(--border);
+}
+
+.cert {
+  background:var(--card);padding:2rem;
+  display:flex;flex-direction:column;gap:.8rem;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .6s ease,transform .6s ease,background .25s;
+}
+.cert.visible { opacity:1;transform:translateY(0); }
+.cert:hover { background:var(--card2); }
+
+.cert-top { display:flex;align-items:center;gap:1rem; }
+.cert-icon {
+  width:44px;height:44px;
+  background:rgba(200,240,96,.08);border:1px solid rgba(200,240,96,.15);
+  border-radius:4px;display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0;
+}
+.cert-name {
+  font-family:'Fraunces',serif;font-weight:600;font-style:italic;
+  font-size:.95rem;line-height:1.3;
+}
+.cert-issuer { font-size:.62rem;color:var(--muted);letter-spacing:.05em; }
+.cert-date {
+  font-size:.6rem;color:var(--accent);letter-spacing:.15em;
+  border:1px solid rgba(200,240,96,.2);
+  padding:.2rem .6rem;border-radius:2px;align-self:flex-start;
+}
+.cert-desc { font-size:.68rem;color:rgba(238,238,245,.4);line-height:1.7; }
+
+/* ─── CONTACT ─── */
+.contact-layout {
+  display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;
+}
+
+.contact-hl {
+  font-family:'Fraunces',serif;
+  font-size:clamp(2.2rem,4.5vw,4rem);
+  font-weight:900;font-style:italic;
+  letter-spacing:-.04em;line-height:.95;
+  margin-bottom:1.5rem;
+}
+.contact-hl em { color:var(--accent); }
+
+.contact-sub {
+  font-size:.75rem;line-height:1.9;
+  color:rgba(238,238,245,.45);margin-bottom:2.5rem;
+}
+
+.contact-links {
+  display:flex;flex-direction:column;
+  gap:1px;background:var(--border);border:1px solid var(--border);
+}
+
+.cl {
+  background:var(--card);padding:1.2rem 1.5rem;
+  display:flex;align-items:center;justify-content:space-between;
+  text-decoration:none;color:var(--text);
+  transition:all .2s;
+}
+.cl:hover { background:var(--card2);padding-left:2rem; }
+
+.cl-label {
+  font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);display:block;margin-bottom:.2rem;
+}
+.cl-val { font-size:.78rem; }
+.cl-arrow { color:var(--accent);transition:transform .2s; }
+.cl:hover .cl-arrow { transform:translateX(4px); }
+
+/* ─── FOOTER ─── */
+footer {
+  padding:2rem 4rem;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.ft { font-size:.6rem;color:var(--muted);letter-spacing:.08em; }
+.ft-status {
+  display:flex;align-items:center;gap:.5rem;
+  font-size:.6rem;color:#4ade80;letter-spacing:.1em;
+}
+.ft-dot {
+  width:5px;height:5px;background:#4ade80;
+  border-radius:50%;animation:blink 2s ease infinite;
+}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp {
+  from { opacity:0;transform:translateY(22px); }
+  to   { opacity:1;transform:translateY(0); }
+}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:900px){
+  nav { padding:1rem 1.5rem; }
+  .nav-links { display:none; }
+  .hero { grid-template-columns:1fr;padding:7rem 1.5rem 3rem;gap:2.5rem; }
+  section { padding:4rem 1.5rem; }
+  .skills-layout { grid-template-columns:1fr; }
+  .contact-layout { grid-template-columns:1fr;gap:2.5rem; }
+  footer { flex-direction:column;gap:1rem;text-align:center; }
+  .projects-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">MVM.</div>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+
+  <div class="hero-left">
+    <div class="hero-badge"><div class="badge-dot"></div>Open to opportunities · Cape Town, ZA</div>
+    <h1 class="hero-name">
+      <span class="dim">Mihle</span><br>
+      <em>Mtotywa</em>
+    </h1>
+    <p class="hero-desc">
+      Recently qualified IT professional with a completed NQF Level 4 Certificate in Information Technology. Builder of real database applications, responsive web projects, and structured software solutions. Holding three active CISCO certifications. Ready to contribute from day one.
+    </p>
+    <div class="hero-ctas">
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="btn btn-solid">View GitHub →</a>
+      <a href="#contact" class="btn btn-outline">Get In Touch</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-card">
+      <div class="hc-label">// Quick Profile</div>
+      <div class="hc-stat"><span class="hc-stat-name">Qualification</span><span class="hc-stat-val">NQF Level 4 — IT</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Institution</span><span class="hc-stat-val">FalseBay College</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Certifications</span><span class="hc-stat-val">CISCO × 3</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">GitHub Projects</span><span class="hc-stat-val">5 Repositories</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Location</span><span class="hc-stat-val">Cape Town, ZA</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Status</span><span class="hc-stat-val" style="color:#4ade80;">● Available Now</span></div>
+      <div class="hc-tags">
+        <span class="hc-tag">SQL</span>
+        <span class="hc-tag">VB.Net</span>
+        <span class="hc-tag">HTML/CSS</span>
+        <span class="hc-tag">JavaScript</span>
+        <span class="hc-tag">Git</span>
+        <span class="hc-tag">Agile</span>
+        <span class="hc-tag">Cybersecurity</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>◆</span> SQL Database Development</div>
+    <div class="marquee-item"><span>◆</span> VB.Net Application Development</div>
+    <div class="marquee-item"><span>◆</span> Responsive Web Development</div>
+    <div class="marquee-item"><span>◆</span> OOP & POP Principles</div>
+    <div class="marquee-item"><span>◆</span> CISCO Certified × 3</div>
+    <div class="marquee-item"><span>◆</span> Agile & Scrum</div>
+    <div class="marquee-item"><span>◆</span> IT Helpdesk & Support</div>
+    <div class="marquee-item"><span>◆</span> Data Analytics</div>
+    <div class="marquee-item"><span>◆</span> Git & GitHub</div>
+    <div class="marquee-item"><span>◆</span> SQL Database Development</div>
+    <div class="marquee-item"><span>◆</span> VB.Net Application Development</div>
+    <div class="marquee-item"><span>◆</span> Responsive Web Development</div>
+    <div class="marquee-item"><span>◆</span> OOP & POP Principles</div>
+    <div class="marquee-item"><span>◆</span> CISCO Certified × 3</div>
+    <div class="marquee-item"><span>◆</span> Agile & Scrum</div>
+    <div class="marquee-item"><span>◆</span> IT Helpdesk & Support</div>
+    <div class="marquee-item"><span>◆</span> Data Analytics</div>
+    <div class="marquee-item"><span>◆</span> Git & GitHub</div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sec-header">
+    <span class="sec-num">01 //</span>
+    <h2 class="sec-title">Projects</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="projects-grid">
+
+    <!-- PROJECT 1 -->
+    <a href="https://github.com/VuyoMtotywa-bit/PostrGr-SQL-basics" target="_blank" class="proj c1 reveal-proj">
+      <div class="proj-header">
+        <span class="proj-icon">🗄️</span>
+        <span class="proj-lang l-sql">SQL · VB.Net</span>
+      </div>
+      <div class="proj-name">Product Inventory Database System</div>
+      <div class="proj-repo">github.com/VuyoMtotywa-bit/PostrGr-SQL-basics</div>
+      <div class="proj-what">What it is</div>
+      <p class="proj-desc">
+        A desktop application connected to a relational database that stores, manages, and retrieves product and inventory data. Built to demonstrate how real-world business data can be organised, queried, and maintained through a software interface — the same fundamental principle behind most business management systems.
+      </p>
+      <ul class="proj-bullets">
+        <li>Users can Add, View, Update and Delete product records directly through the application interface (full CRUD functionality)</li>
+        <li>SQL queries retrieve and filter inventory data — for example, finding all products below a stock threshold or sorting by category</li>
+        <li>Data validation prevents incorrect or incomplete entries from being saved to the database</li>
+        <li>Error handling ensures the application responds clearly when something goes wrong, rather than crashing silently</li>
+        <li>Demonstrates the connection between a front-end application (VB.Net) and a back-end database (SQL/Access)</li>
+      </ul>
+      <div class="proj-tags">
+        <span class="ptag">SQL</span><span class="ptag">VB.Net</span><span class="ptag">Microsoft Access</span>
+        <span class="ptag">CRUD</span><span class="ptag">Data Validation</span><span class="ptag">Error Handling</span>
+      </div>
+      <span class="proj-cta">View on GitHub →</span>
+    </a>
+
+    <!-- PROJECT 2 -->
+    <a href="https://github.com/VuyoMtotywa-bit/Database-Projects" target="_blank" class="proj c2 reveal-proj">
+      <div class="proj-header">
+        <span class="proj-icon">📐</span>
+        <span class="proj-lang l-vb">VB.Net · OOP</span>
+      </div>
+      <div class="proj-name">Cylinder & Cone Volume Calculator</div>
+      <div class="proj-repo">github.com/VuyoMtotywa-bit/Database-Projects</div>
+      <div class="proj-what">What it is</div>
+      <p class="proj-desc">
+        A Windows desktop application that calculates the volume of geometric shapes — specifically cylinders and cones — based on measurements entered by the user. Built using Object-Oriented Programming principles, meaning each shape is structured as its own self-contained unit of code with its own properties and calculation logic.
+      </p>
+      <ul class="proj-bullets">
+        <li>User enters the radius and height of a cylinder or cone and the application instantly calculates and displays the correct volume</li>
+        <li>Each shape (Cylinder, Cone) is coded as a separate class with its own properties — this is the OOP principle of encapsulation in action</li>
+        <li>Input validation ensures users cannot enter letters, negative numbers, or blank values — the application handles these gracefully</li>
+        <li>Clean Windows Forms interface designed for ease of use — demonstrates understanding of user-facing application design</li>
+        <li>Demonstrates the difference between OOP (object-oriented) and POP (procedural) approaches to solving the same problem</li>
+      </ul>
+      <div class="proj-tags">
+        <span class="ptag">VB.Net</span><span class="ptag">OOP</span><span class="ptag">Windows Forms</span>
+        <span class="ptag">Encapsulation</span><span class="ptag">Input Validation</span><span class="ptag">UI Design</span>
+      </div>
+      <span class="proj-cta">View on GitHub →</span>
+    </a>
+
+    <!-- PROJECT 3 -->
+    <a href="https://github.com/VuyoMtotywa-bit/HTML-CSS-Javascript" target="_blank" class="proj c3 reveal-proj">
+      <div class="proj-header">
+        <span class="proj-icon">🌐</span>
+        <span class="proj-lang l-web">HTML · CSS · JS</span>
+      </div>
+      <div class="proj-name">Responsive Web Projects Collection</div>
+      <div class="proj-repo">github.com/VuyoMtotywa-bit/HTML-CSS-Javascript</div>
+      <div class="proj-what">What it is</div>
+      <p class="proj-desc">
+        A collection of independently built web projects, each demonstrating a different aspect of front-end web development. Rather than one large site, this repository contains multiple smaller projects — showing range and the ability to apply web technologies across different use cases and layouts.
+      </p>
+      <ul class="proj-bullets">
+        <li>Each project is fully responsive — layouts adapt correctly whether viewed on a mobile phone, tablet, or desktop screen</li>
+        <li>JavaScript is used for interactivity — responding to user actions like button clicks, form submissions, and page events without reloading the page (DOM manipulation)</li>
+        <li>Form validation logic checks user input before submission — for example, detecting empty fields, incorrect email formats, or mismatched passwords</li>
+        <li>CSS layouts use Flexbox and Grid — modern techniques used in professional web development today</li>
+        <li>All projects version-controlled with Git — commits tracked and managed through GitHub showing real development workflow habits</li>
+      </ul>
+      <div class="proj-tags">
+        <span class="ptag">HTML5</span><span class="ptag">CSS3</span><span class="ptag">JavaScript</span>
+        <span class="ptag">Responsive Design</span><span class="ptag">DOM</span><span class="ptag">Git</span>
+      </div>
+      <span class="proj-cta">View on GitHub →</span>
+    </a>
+
+    <!-- PROJECT 4 -->
+    <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming" target="_blank" class="proj c4 reveal-proj">
+      <div class="proj-header">
+        <span class="proj-icon">⚙️</span>
+        <span class="proj-lang l-oop">OOP · Fundamentals</span>
+      </div>
+      <div class="proj-name">Object-Oriented Programming — Shape Calculations</div>
+      <div class="proj-repo">github.com/VuyoMtotywa-bit/Object-Oriented-Programming</div>
+      <div class="proj-what">What it is</div>
+      <p class="proj-desc">
+        A focused programming project demonstrating the four core principles of Object-Oriented Programming through shape and geometry calculations. This is important because OOP is the foundation of almost every modern programming language and framework in professional software development.
+      </p>
+      <ul class="proj-bullets">
+        <li>Encapsulation — each shape's data and calculation methods are kept inside its own class, not scattered across the code</li>
+        <li>Abstraction — complex calculation logic is hidden behind simple method calls, so you call CalculateArea() without needing to know how it works internally</li>
+        <li>Inheritance — shared shape properties are defined once in a parent class and reused by child classes (e.g., Circle and Rectangle both inherit from a base Shape class)</li>
+        <li>Demonstrates clean, readable code structure — an important quality for any professional development environment</li>
+      </ul>
+      <div class="proj-tags">
+        <span class="ptag">OOP</span><span class="ptag">Encapsulation</span><span class="ptag">Abstraction</span>
+        <span class="ptag">Inheritance</span><span class="ptag">Clean Code</span>
+      </div>
+      <span class="proj-cta">View on GitHub →</span>
+    </a>
+
+    <!-- PROJECT 5 -->
+    <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="proj c5 reveal-proj">
+      <div class="proj-header">
+        <span class="proj-icon">🔗</span>
+        <span class="proj-lang l-html">HTML · OOP</span>
+      </div>
+      <div class="proj-name">OOP Concepts — Web Implementation</div>
+      <div class="proj-repo">github.com/VuyoMtotywa-bit/Object-Oriented-Programming-</div>
+      <div class="proj-what">What it is</div>
+      <p class="proj-desc">
+        An extension of the OOP fundamentals project, reimplemented in a web context using HTML and JavaScript. This demonstrates the ability to apply the same programming logic across different environments — a key skill for developers who need to work across both desktop and web platforms.
+      </p>
+      <ul class="proj-bullets">
+        <li>The same OOP principles (classes, methods, properties) applied using JavaScript in a browser environment rather than a desktop application</li>
+        <li>Shows understanding that OOP is a concept, not just a language feature — it transfers across VB.Net, JavaScript, and other languages</li>
+        <li>Results displayed dynamically in the browser without page reloads — demonstrating front-end JavaScript capability alongside programming logic</li>
+        <li>Highlights versatility: the ability to build solutions in both desktop (VB.Net) and web (HTML/JS) environments</li>
+      </ul>
+      <div class="proj-tags">
+        <span class="ptag">JavaScript OOP</span><span class="ptag">HTML</span><span class="ptag">Classes</span>
+        <span class="ptag">Cross-Platform</span><span class="ptag">Dynamic UI</span>
+      </div>
+      <span class="proj-cta">View on GitHub →</span>
+    </a>
+
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-header">
+    <span class="sec-num">02 //</span>
+    <h2 class="sec-title">Skills</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="skills-layout">
+    <div class="skill-group reveal-skill">
+      <div class="sg-title">Programming</div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">SQL — Queries, Joins, Aggregations, CRUD</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">VB.Net — OOP & POP Concepts</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent3)"></div><span class="sk-name">HTML5 & CSS3 — Responsive Layouts</span></div>
+      <div class="sk"><div class="sk-dot" style="background:#f0a060"></div><span class="sk-name">JavaScript — DOM, Events, Validation</span></div>
+    </div>
+    <div class="skill-group reveal-skill">
+      <div class="sg-title">Database & Data</div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">Relational Database Design & Normalisation</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">Database Connectivity (VB.Net ↔ SQL)</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">Data Cleaning, Validation & Transformation</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">Microsoft Access</span></div>
+    </div>
+    <div class="skill-group reveal-skill">
+      <div class="sg-title">Business & Project</div>
+      <div class="sk"><div class="sk-dot" style="background:#f0a060"></div><span class="sk-name">Agile Methodologies — Iterative Delivery</span></div>
+      <div class="sk"><div class="sk-dot" style="background:#f0a060"></div><span class="sk-name">Scrum Framework — Roles, Ceremonies, Artifacts</span></div>
+      <div class="sk"><div class="sk-dot" style="background:#f0a060"></div><span class="sk-name">PERT Charts — Project Scheduling</span></div>
+      <div class="sk"><div class="sk-dot" style="background:#f0a060"></div><span class="sk-name">Porter's 5 Forces — Business Analysis</span></div>
+    </div>
+    <div class="skill-group reveal-skill">
+      <div class="sg-title">Tools & Platforms</div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Git & GitHub — Version Control</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Visual Studio — IDE & Debugging</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Microsoft 365 — Word, Excel, PowerPoint</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Windows OS — Administration & Support</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section id="certifications">
+  <div class="sec-header">
+    <span class="sec-num">03 //</span>
+    <h2 class="sec-title">Certifications</h2>
+    <div class="sec-line"></div>
+  </div>
+
+  <div class="certs-grid">
+    <div class="cert reveal-cert">
+      <div class="cert-top">
+        <div class="cert-icon">🛡️</div>
+        <div>
+          <div class="cert-name">Introduction to Cybersecurity</div>
+          <div class="cert-issuer">CISCO Networking Academy</div>
+        </div>
+      </div>
+      <div class="cert-date">VERIFIED · SEP 2025</div>
+      <div class="cert-desc">Covers core cybersecurity concepts including threat types, attack vectors, network security principles, and safe practices for protecting systems and data.</div>
+    </div>
+
+    <div class="cert reveal-cert">
+      <div class="cert-top">
+        <div class="cert-icon">📊</div>
+        <div>
+          <div class="cert-name">Introduction to Data Science</div>
+          <div class="cert-issuer">CISCO Networking Academy</div>
+        </div>
+      </div>
+      <div class="cert-date">VERIFIED · MAY 2025</div>
+      <div class="cert-desc">Foundational understanding of data science concepts, the data lifecycle, data types, and how organisations use data to make informed decisions.</div>
+    </div>
+
+    <div class="cert reveal-cert">
+      <div class="cert-top">
+        <div class="cert-icon">📈</div>
+        <div>
+          <div class="cert-name">Data Analytics Essentials</div>
+          <div class="cert-issuer">CISCO Networking Academy</div>
+        </div>
+      </div>
+      <div class="cert-date">VERIFIED · FEB 2026</div>
+      <div class="cert-desc">Practical understanding of the full data analytics process — from data collection and preparation through to analysis, visualisation, and communicating findings to stakeholders.</div>
+    </div>
+
+    <div class="cert reveal-cert">
+      <div class="cert-top">
+        <div class="cert-icon">🎓</div>
+        <div>
+          <div class="cert-name">NQF Level 4 — Information Technology</div>
+          <div class="cert-issuer">FalseBay College, Fish Hoek</div>
+        </div>
+      </div>
+      <div class="cert-date">COMPLETED · 2026</div>
+      <div class="cert-desc">Full qualification covering programming fundamentals, database management, web development, systems analysis, business analysis, and project management.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="border-top:1px solid var(--border);">
+  <div class="contact-layout">
+    <div>
+      <h2 class="contact-hl">Let's<br><em>work.</em></h2>
+      <p class="contact-sub">
+        Open to entry-level IT roles, learnerships, internships, and graduate programmes across Cape Town and remote positions. Available immediately — ready to contribute from day one.
+      </p>
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="btn btn-solid">View GitHub →</a>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:mihlemtotywa@gmail.com" class="cl">
+        <div><span class="cl-label">Email</span><span class="cl-val">mihlemtotywa@gmail.com</span></div>
+        <span class="cl-arrow">→</span>
+      </a>
+      <a href="tel:+27606022293" class="cl">
+        <div><span class="cl-label">Phone</span><span class="cl-val">(+27) 606 022 293</span></div>
+        <span class="cl-arrow">→</span>
+      </a>
+      <a href="https://linkedin.com/in/mihle-mtotywa-b67314298" target="_blank" class="cl">
+        <div><span class="cl-label">LinkedIn</span><span class="cl-val">linkedin.com/in/mihle-mtotywa-b67314298</span></div>
+        <span class="cl-arrow">→</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="cl">
+        <div><span class="cl-label">GitHub</span><span class="cl-val">github.com/VuyoMtotywa-bit</span></div>
+        <span class="cl-arrow">→</span>
+      </a>
+      <div class="cl">
+        <div><span class="cl-label">Location</span><span class="cl-val">Cape Town, Western Cape, 7100</span></div>
+        <span class="cl-arrow">📍</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="ft">© 2026 Mihle Vuyo Mtotywa — IT Portfolio</span>
+  <div class="ft-status"><div class="ft-dot"></div>Available for opportunities</div>
+</footer>
+
+<script>
+// CURSOR
+const cur  = document.getElementById('cur');
+const cur2 = document.getElementById('cur2');
+document.addEventListener('mousemove', e => {
+  cur.style.left  = e.clientX - 4 + 'px';
+  cur.style.top   = e.clientY - 4 + 'px';
+  setTimeout(() => {
+    cur2.style.left = e.clientX - 16 + 'px';
+    cur2.style.top  = e.clientY - 16 + 'px';
+  }, 80);
+});
+document.querySelectorAll('a,button').forEach(el => {
+  el.addEventListener('mouseenter', () => { cur.style.transform='scale(2)'; cur2.style.transform='scale(1.4)'; });
+  el.addEventListener('mouseleave', () => { cur.style.transform='scale(1)'; cur2.style.transform='scale(1)'; });
+});
+
+// SCROLL REVEAL
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.reveal-proj,.reveal-skill,.reveal-cert').forEach((el,i) => {
+  el.style.transitionDelay = (i % 3) * 0.12 + 's';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
