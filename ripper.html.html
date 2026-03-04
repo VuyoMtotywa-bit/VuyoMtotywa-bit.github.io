@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MVM // JackTheRipper.exe</title>
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Share+Tech+Mono&family=Cinzel:wght@400;700;900&display=swap" rel="stylesheet"/>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --blood: #8b0000;
+  --fog: #1a1a0f;
+  --green: #00ff41;
+  --amber: #ffb000;
+  --parchment: #d4c5a0;
+  --dark: #0a0a05;
+  --muted: #4a4a3a;
+  --window-bg: rgba(8,8,5,0.96);
+  --window-border: #2a2a1a;
+  --titlebar: #1a1a0f;
+}
+
+body {
+  background: var(--dark);
+  font-family: 'Share Tech Mono', monospace;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  cursor: none;
+}
+
+/* ═══════════════════════════════════
+   INTRO SCREEN — JACK THE RIPPER
+═══════════════════════════════════ */
+#intro {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.fog-layer {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(26,10,0,0.8) 0%, #000 70%);
+  animation: fogPulse 4s ease-in-out infinite;
+}
+
+@keyframes fogPulse {
+  0%,100% { opacity: 0.8; }
+  50% { opacity: 0.5; }
+}
+
+.gaslight {
+  position: absolute;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(255,176,0,0.15) 0%, transparent 70%);
+  border-radius: 50%;
+  animation: gaslightFlicker 0.8s ease-in-out infinite alternate;
+}
+
+.gaslight-1 { top: 10%; left: 10%; }
+.gaslight-2 { top: 10%; right: 10%; }
+.gaslight-3 { bottom: 20%; left: 50%; transform: translateX(-50%); }
+
+@keyframes gaslightFlicker {
+  0% { opacity: 0.6; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1.1); }
+}
+
+.ripper-ascii {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  animation: fadeInUp 1s ease both;
+}
+
+.top-hat {
+  font-size: clamp(4rem, 12vw, 9rem);
+  line-height: 1;
+  filter: drop-shadow(0 0 20px rgba(255,176,0,0.4));
+  animation: hatTip 3s ease-in-out infinite;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+@keyframes hatTip {
+  0%,100% { transform: rotate(0deg) translateY(0); }
+  20% { transform: rotate(-15deg) translateY(-10px); }
+  40% { transform: rotate(0deg) translateY(0); }
+}
+
+.ripper-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.5rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: var(--amber);
+  letter-spacing: 0.3em;
+  text-shadow: 0 0 30px rgba(255,176,0,0.5), 0 0 60px rgba(139,0,0,0.3);
+  margin-bottom: 0.5rem;
+  animation: glitch 4s ease-in-out infinite;
+}
+
+@keyframes glitch {
+  0%,90%,100% { text-shadow: 0 0 30px rgba(255,176,0,0.5); transform: translateX(0); }
+  91% { transform: translateX(-3px); text-shadow: 3px 0 var(--blood), -3px 0 var(--green); }
+  93% { transform: translateX(3px); text-shadow: -3px 0 var(--blood), 3px 0 var(--green); }
+  95% { transform: translateX(0); }
+}
+
+.ripper-sub {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(0.7rem, 2vw, 1rem);
+  color: var(--parchment);
+  opacity: 0.7;
+  letter-spacing: 0.2em;
+  margin-bottom: 3rem;
+}
+
+.blood-drip {
+  color: var(--blood);
+  font-size: 1.5rem;
+  letter-spacing: 0.5rem;
+  animation: drip 2s ease-in-out infinite;
+  display: block;
+  margin-bottom: 2rem;
+}
+
+@keyframes drip {
+  0%,100% { transform: translateY(0); opacity: 1; }
+  50% { transform: translateY(8px); opacity: 0.6; }
+}
+
+.intro-message {
+  font-family: 'Special Elite', cursive;
+  font-size: clamp(0.8rem, 2vw, 1.1rem);
+  color: var(--parchment);
+  text-align: center;
+  max-width: 500px;
+  line-height: 2;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: fadeIn 1s 1.5s ease both;
+}
+
+.intro-message .red { color: var(--blood); }
+.intro-message .gold { color: var(--amber); }
+
+.enter-btn {
+  background: transparent;
+  border: 1px solid var(--amber);
+  color: var(--amber);
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  padding: 1rem 3rem;
+  cursor: none;
+  transition: all 0.3s;
+  opacity: 0;
+  animation: fadeIn 1s 2.5s ease both;
+  position: relative;
+  overflow: hidden;
+}
+
+.enter-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--amber);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+  z-index: -1;
+}
+
+.enter-btn:hover::before { transform: scaleX(1); }
+.enter-btn:hover { color: #000; box-shadow: 0 0 30px rgba(255,176,0,0.4); }
+
+.fog-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: rgba(255,176,0,0.3);
+  border-radius: 50%;
+  animation: float linear infinite;
+}
+
+@keyframes float {
+  0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-100px) translateX(100px); opacity: 0; }
+}
+
+/* ═══════════════════════════════════
+   MATRIX RAIN CANVAS
+═══════════════════════════════════ */
+#matrix-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.07;
+}
+
+/* ═══════════════════════════════════
+   DESKTOP OS
+═══════════════════════════════════ */
+#desktop {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: none;
+  background: radial-gradient(ellipse at 30% 40%, rgba(26,26,10,0.9) 0%, var(--dark) 70%);
+}
+
+/* Desktop background pattern */
+#desktop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 49px, rgba(0,255,65,0.03) 50px),
+    repeating-linear-gradient(90deg, transparent, transparent 49px, rgba(0,255,65,0.03) 50px);
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════
+   TASKBAR
+═══════════════════════════════════ */
+#taskbar {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 44px;
+  background: rgba(10,10,5,0.97);
+  border-top: 1px solid rgba(0,255,65,0.2);
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+  z-index: 500;
+  gap: 0.5rem;
+}
+
+.taskbar-start {
+  background: var(--blood);
+  border: 1px solid rgba(255,0,0,0.3);
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  padding: 0.3rem 0.8rem;
+  cursor: none;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.taskbar-start:hover { background: #aa0000; }
+
+.taskbar-apps {
+  display: flex;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.taskbar-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(0,255,65,0.15);
+  color: rgba(0,255,65,0.7);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  padding: 0.3rem 0.7rem;
+  cursor: none;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.taskbar-btn:hover, .taskbar-btn.active {
+  background: rgba(0,255,65,0.1);
+  border-color: rgba(0,255,65,0.4);
+  color: var(--green);
+}
+
+.taskbar-clock {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--amber);
+  text-align: right;
+  min-width: 120px;
+}
+
+/* ═══════════════════════════════════
+   DESKTOP ICONS
+═══════════════════════════════════ */
+.desktop-icons {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: none;
+  width: 80px;
+  padding: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.desktop-icon:hover {
+  background: rgba(0,255,65,0.08);
+  border-color: rgba(0,255,65,0.3);
+}
+
+.desktop-icon:active { transform: scale(0.95); }
+
+.icon-emoji { font-size: 2rem; }
+
+.icon-label {
+  font-size: 0.55rem;
+  color: var(--parchment);
+  letter-spacing: 0.05em;
+  text-shadow: 0 1px 3px #000;
+  line-height: 1.3;
+}
+
+/* ═══════════════════════════════════
+   WINDOWS
+═══════════════════════════════════ */
+.window {
+  position: absolute;
+  background: var(--window-bg);
+  border: 1px solid rgba(0,255,65,0.25);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(0,255,65,0.05);
+  min-width: 320px;
+  min-height: 200px;
+  display: none;
+  flex-direction: column;
+  z-index: 100;
+  resize: both;
+  overflow: hidden;
+}
+
+.window.active { z-index: 200; border-color: rgba(0,255,65,0.5); }
+.window.visible { display: flex; }
+
+.window-titlebar {
+  background: var(--titlebar);
+  border-bottom: 1px solid rgba(0,255,65,0.2);
+  padding: 0.5rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: move;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.window-controls {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.wc {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  cursor: none;
+  transition: opacity 0.2s;
+}
+
+.wc-close { background: var(--blood); }
+.wc-min { background: var(--amber); }
+.wc-max { background: #00aa00; }
+.wc:hover { opacity: 0.7; }
+
+.window-title {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  flex: 1;
+}
+
+.window-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1.2rem;
+}
+
+.window-body::-webkit-scrollbar { width: 4px; }
+.window-body::-webkit-scrollbar-track { background: #000; }
+.window-body::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.3); }
+
+/* ═══════════════════════════════════
+   TERMINAL
+═══════════════════════════════════ */
+#terminal-window {
+  width: min(640px, 95vw);
+  height: min(420px, 60vh);
+  top: 60px;
+  left: 120px;
+}
+
+.terminal-output {
+  font-size: 0.75rem;
+  line-height: 1.8;
+  color: var(--green);
+  margin-bottom: 0.5rem;
+}
+
+.terminal-line { margin-bottom: 0.2rem; }
+.terminal-line .prompt { color: var(--amber); }
+.terminal-line .cmd { color: #fff; }
+.terminal-line .result { color: var(--green); }
+.terminal-line .error { color: var(--blood); }
+.terminal-line .info { color: var(--amber); }
+.terminal-line .success { color: #00ff41; }
+
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.terminal-prompt-label {
+  color: var(--amber);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+#terminal-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75rem;
+  caret-color: var(--green);
+}
+
+/* ═══════════════════════════════════
+   ABOUT WINDOW
+═══════════════════════════════════ */
+#about-window {
+  width: min(580px, 95vw);
+  height: min(480px, 70vh);
+  top: 80px;
+  left: 200px;
+}
+
+.about-header {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0,255,65,0.15);
+}
+
+.about-avatar {
+  font-size: 3.5rem;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 10px rgba(255,176,0,0.5));
+}
+
+.about-name {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--amber);
+  margin-bottom: 0.3rem;
+}
+
+.about-alias {
+  font-size: 0.65rem;
+  color: var(--blood);
+  letter-spacing: 0.2em;
+  margin-bottom: 0.5rem;
+}
+
+.about-role {
+  font-size: 0.7rem;
+  color: var(--green);
+  line-height: 1.8;
+}
+
+.about-section {
+  margin-bottom: 1.2rem;
+}
+
+.about-section-title {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about-section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255,176,0,0.2);
+}
+
+.about-text {
+  font-size: 0.72rem;
+  color: rgba(212,197,160,0.7);
+  line-height: 1.8;
+}
+
+/* ═══════════════════════════════════
+   PROJECTS WINDOW
+═══════════════════════════════════ */
+#projects-window {
+  width: min(700px, 95vw);
+  height: min(500px, 72vh);
+  top: 50px;
+  left: 160px;
+}
+
+.project-file {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(0,255,65,0.1);
+  margin-bottom: 0.8rem;
+  transition: all 0.2s;
+  cursor: none;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.project-file:hover {
+  border-color: rgba(0,255,65,0.4);
+  background: rgba(0,255,65,0.04);
+  transform: translateX(4px);
+}
+
+.pf-top {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.pf-icon { font-size: 1.2rem; }
+
+.pf-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--green);
+}
+
+.pf-lang {
+  font-size: 0.55rem;
+  background: rgba(0,255,65,0.1);
+  border: 1px solid rgba(0,255,65,0.2);
+  color: var(--green);
+  padding: 0.1rem 0.4rem;
+  letter-spacing: 0.1em;
+}
+
+.pf-desc {
+  font-size: 0.68rem;
+  color: rgba(212,197,160,0.6);
+  line-height: 1.7;
+  margin-bottom: 0.6rem;
+  padding-left: 2.1rem;
+}
+
+.pf-tags {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding-left: 2.1rem;
+}
+
+.pf-tag {
+  font-size: 0.55rem;
+  color: var(--muted);
+  border: 1px solid var(--muted);
+  padding: 0.1rem 0.4rem;
+  letter-spacing: 0.05em;
+}
+
+/* ═══════════════════════════════════
+   SKILLS WINDOW
+═══════════════════════════════════ */
+#skills-window {
+  width: min(520px, 95vw);
+  height: min(460px, 68vh);
+  top: 70px;
+  left: 180px;
+}
+
+.skill-bar-item {
+  margin-bottom: 1rem;
+}
+
+.skill-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+
+.skill-bar-name {
+  font-size: 0.7rem;
+  color: var(--parchment);
+}
+
+.skill-bar-pct {
+  font-size: 0.65rem;
+  color: var(--amber);
+}
+
+.skill-bar-track {
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+  border-radius: 2px;
+  width: 0;
+  transition: width 1.5s ease;
+  box-shadow: 0 0 8px rgba(0,255,65,0.4);
+}
+
+/* ═══════════════════════════════════
+   CERTS WINDOW
+═══════════════════════════════════ */
+#certs-window {
+  width: min(540px, 95vw);
+  height: min(380px, 56vh);
+  top: 80px;
+  left: 170px;
+}
+
+.cert-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid rgba(255,176,0,0.15);
+  margin-bottom: 0.7rem;
+  transition: all 0.2s;
+}
+
+.cert-card:hover {
+  border-color: rgba(255,176,0,0.4);
+  background: rgba(255,176,0,0.04);
+}
+
+.cert-seal { font-size: 2rem; }
+
+.cert-info-name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--amber);
+  margin-bottom: 0.2rem;
+}
+
+.cert-info-issuer {
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+.cert-info-date {
+  font-size: 0.6rem;
+  color: var(--green);
+  letter-spacing: 0.1em;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════
+   CONTACT WINDOW
+═══════════════════════════════════ */
+#contact-window {
+  width: min(480px, 95vw);
+  height: min(380px, 55vh);
+  top: 90px;
+  left: 190px;
+}
+
+.contact-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(0,255,65,0.1);
+  margin-bottom: 0.6rem;
+  transition: all 0.2s;
+  text-decoration: none;
+  cursor: none;
+}
+
+.contact-row:hover {
+  border-color: rgba(0,255,65,0.4);
+  background: rgba(0,255,65,0.04);
+  transform: translateX(4px);
+}
+
+.contact-row-icon { font-size: 1.1rem; }
+
+.contact-row-label {
+  font-size: 0.58rem;
+  color: var(--muted);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  display: block;
+}
+
+.contact-row-val {
+  font-size: 0.75rem;
+  color: var(--green);
+}
+
+/* ═══════════════════════════════════
+   WELCOME NOTIFICATION
+═══════════════════════════════════ */
+#welcome-toast {
+  position: fixed;
+  bottom: 60px;
+  right: 1.5rem;
+  background: rgba(10,10,5,0.97);
+  border: 1px solid rgba(255,176,0,0.4);
+  border-left: 3px solid var(--amber);
+  padding: 1rem 1.2rem;
+  max-width: 300px;
+  z-index: 600;
+  display: none;
+  animation: slideIn 0.4s ease;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  color: var(--amber);
+  margin-bottom: 0.3rem;
+}
+
+.toast-msg {
+  font-size: 0.62rem;
+  color: rgba(212,197,160,0.6);
+  line-height: 1.6;
+}
+
+/* ═══════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════ */
+#cursor {
+  width: 10px; height: 10px;
+  background: var(--green);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 99999;
+  mix-blend-mode: screen;
+  transition: transform 0.1s;
+}
+
+#cursor-trail {
+  width: 30px; height: 30px;
+  border: 1px solid rgba(0,255,65,0.4);
+  border-radius: 50%;
+  position: fixed;
+  pointer-events: none;
+  z-index: 99998;
+  transition: all 0.25s ease;
+}
+
+/* ═══════════════════════════════════
+   SCANLINES
+═══════════════════════════════════ */
+.scanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.08) 2px,
+    rgba(0,0,0,0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9000;
+  animation: scanMove 8s linear infinite;
+}
+
+@keyframes scanMove {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+}
+
+/* ═══════════════════════════════════
+   BOOT SCREEN
+═══════════════════════════════════ */
+#boot-screen {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 9500;
+  display: none;
+  padding: 3rem;
+  overflow: hidden;
+}
+
+.boot-text {
+  font-size: 0.75rem;
+  color: var(--green);
+  line-height: 2;
+}
+
+.boot-line {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+
+@keyframes bootLine {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* mobile */
+@media (max-width: 600px) {
+  .desktop-icons { display: none; }
+  #taskbar { gap: 0.2rem; padding: 0 0.5rem; }
+  .taskbar-btn { font-size: 0.5rem; padding: 0.2rem 0.4rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- SCANLINES -->
+<div class="scanlines"></div>
+
+<!-- MATRIX CANVAS -->
+<canvas id="matrix-canvas"></canvas>
+
+<!-- ══════════ INTRO SCREEN ══════════ -->
+<div id="intro">
+  <div class="fog-layer"></div>
+  <div class="gaslight gaslight-1"></div>
+  <div class="gaslight gaslight-2"></div>
+  <div class="gaslight gaslight-3"></div>
+  <div class="fog-particles" id="fog-particles"></div>
+
+  <div class="ripper-ascii">
+    <span class="top-hat">🎩</span>
+    <div class="ripper-title">JACKTHERIPPER.EXE</div>
+    <div class="ripper-sub">// MIHLE VUYO MTOTYWA — IT PORTFOLIO //</div>
+    <div class="blood-drip">⠿ ⠿ ⠿</div>
+    <p class="intro-message">
+      <em>"Good evening. The fog rolls thick over Cape Town tonight.<br>
+      Step into the shadows, if you dare —<br>
+      <span class="gold">a most curious operator</span> awaits your acquaintance.<br>
+      <span class="red">He leaves no bug unfound,<br>
+      no database unqueried.</span>"</em>
+    </p>
+    <button class="enter-btn" onclick="startBoot()">⟶ ENTER THE SYSTEM ⟵</button>
+  </div>
+</div>
+
+<!-- ══════════ BOOT SCREEN ══════════ -->
+<div id="boot-screen">
+  <div class="boot-text" id="boot-text"></div>
+</div>
+
+<!-- ══════════ DESKTOP ══════════ -->
+<div id="desktop">
+
+  <!-- Desktop Icons -->
+  <div class="desktop-icons">
+    <div class="desktop-icon" ondblclick="openWindow('terminal-window', 'terminal-btn')">
+      <span class="icon-emoji">💀</span>
+      <span class="icon-label">terminal.exe</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openWindow('about-window', 'about-btn')">
+      <span class="icon-emoji">🎩</span>
+      <span class="icon-label">about_ripper</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openWindow('projects-window', 'projects-btn')">
+      <span class="icon-emoji">🗡️</span>
+      <span class="icon-label">projects/</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openWindow('skills-window', 'skills-btn')">
+      <span class="icon-emoji">⚗️</span>
+      <span class="icon-label">skills.dat</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openWindow('certs-window', 'certs-btn')">
+      <span class="icon-emoji">📜</span>
+      <span class="icon-label">certifications</span>
+    </div>
+    <div class="desktop-icon" ondblclick="openWindow('contact-window', 'contact-btn')">
+      <span class="icon-emoji">🩸</span>
+      <span class="icon-label">contact.me</span>
+    </div>
+  </div>
+
+  <!-- ══ TERMINAL WINDOW ══ -->
+  <div class="window" id="terminal-window">
+    <div class="window-titlebar" onmousedown="startDrag(event, 'terminal-window')">
+      <div class="window-controls">
+        <div class="wc wc-close" onclick="closeWindow('terminal-window', 'terminal-btn')"></div>
+        <div class="wc wc-min"></div>
+        <div class="wc wc-max"></div>
+      </div>
+      <div class="window-title">💀 RIPPER_TERMINAL v1.888 — Cape Town, ZA</div>
+    </div>
+    <div class="window-body">
+      <div class="terminal-output" id="terminal-output"></div>
+      <div class="terminal-input-line">
+        <span class="terminal-prompt-label">ripper@MVM:~$</span>
+        <input id="terminal-input" type="text" autocomplete="off" spellcheck="false" placeholder="type 'help' for commands..."/>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ABOUT WINDOW ══ -->
+  <div class="window" id="about-window">
+    <div class="window-titlebar" onmousedown="startDrag(event, 'about-window')">
+      <div class="window-controls">
+        <div class="wc wc-close" onclick="closeWindow('about-window', 'about-btn')"></div>
+        <div class="wc wc-min"></div>
+        <div class="wc wc-max"></div>
+      </div>
+      <div class="window-title">🎩 about_ripper.txt</div>
+    </div>
+    <div class="window-body">
+      <div class="about-header">
+        <div class="about-avatar">🎩</div>
+        <div>
+          <div class="about-name">Mihle Vuyo Mtotywa</div>
+          <div class="about-alias">// ALIAS: JackTheRipper //</div>
+          <div class="about-role">
+            IT Graduate · SQL Developer · Helpdesk Technician<br>
+            Data Analyst · Aspiring SOC Analyst<br>
+            <span style="color:var(--amber)">📍 Cape Town, Western Cape, ZA</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-section">
+        <div class="about-section-title">Identity</div>
+        <div class="about-text">
+          Recently qualified IT professional with a NQF Level 4 Certificate in Information Technology from FalseBay College, Fish Hoek. Builder of real things. Holder of three active CISCO certifications. Leaves no bug unfound and no database unqueried.
+        </div>
+      </div>
+      <div class="about-section">
+        <div class="about-section-title">Languages</div>
+        <div class="about-text">IsiXhosa (Native) · English (Fluent) · Afrikaans (Basic) · SQL (Intermediate) · VB.Net (Intermediate) · JavaScript (Foundational)</div>
+      </div>
+      <div class="about-section">
+        <div class="about-section-title">Contact</div>
+        <div class="about-text">
+          📧 mihlemtotywa@gmail.com<br>
+          📞 (+27) 606 022 293<br>
+          🐱 github.com/VuyoMtotywa-bit<br>
+          💼 linkedin.com/in/mihle-mtotywa-b67314298
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ PROJECTS WINDOW ══ -->
+  <div class="window" id="projects-window">
+    <div class="window-titlebar" onmousedown="startDrag(event, 'projects-window')">
+      <div class="window-controls">
+        <div class="wc wc-close" onclick="closeWindow('projects-window', 'projects-btn')"></div>
+        <div class="wc wc-min"></div>
+        <div class="wc wc-max"></div>
+      </div>
+      <div class="window-title">🗡️ projects/ — 5 items</div>
+    </div>
+    <div class="window-body">
+
+      <a href="https://github.com/VuyoMtotywa-bit/PostrGr-SQL-basics" target="_blank" class="project-file">
+        <div class="pf-top">
+          <span class="pf-icon">🗄️</span>
+          <span class="pf-name">PostrGr-SQL-basics</span>
+          <span class="pf-lang">SQL · DATABASE</span>
+        </div>
+        <div class="pf-desc">Database-connected application with full CRUD functionality. SQL queries for data extraction, filtering, aggregation and reporting. Error handling and data validation implemented.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">CRUD</span><span class="pf-tag">SQL</span><span class="pf-tag">Data Validation</span><span class="pf-tag">Query Optimisation</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/VuyoMtotywa-bit/Database-Projects" target="_blank" class="project-file">
+        <div class="pf-top">
+          <span class="pf-icon">🖥️</span>
+          <span class="pf-name">Database-Projects</span>
+          <span class="pf-lang">VB.NET · OOP</span>
+        </div>
+        <div class="pf-desc">Cylinder & Cone Volume Calculator. Windows Forms desktop application applying OOP and POP paradigms with clean UI and validated data handling.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">VB.Net</span><span class="pf-tag">OOP</span><span class="pf-tag">Windows Forms</span><span class="pf-tag">Input Validation</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/VuyoMtotywa-bit/HTML-CSS-Javascript" target="_blank" class="project-file">
+        <div class="pf-top">
+          <span class="pf-icon">🌐</span>
+          <span class="pf-name">HTML-CSS-Javascript</span>
+          <span class="pf-lang">HTML · CSS · JS</span>
+        </div>
+        <div class="pf-desc">Responsive web portfolio. Cross-browser compatible, DOM manipulation, form validation and interactive UI elements built with vanilla JavaScript.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">Responsive</span><span class="pf-tag">DOM</span><span class="pf-tag">Form Validation</span><span class="pf-tag">Git</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming" target="_blank" class="project-file">
+        <div class="pf-top">
+          <span class="pf-icon">⚙️</span>
+          <span class="pf-name">Object-Oriented-Programming</span>
+          <span class="pf-lang">OOP · FUNDAMENTALS</span>
+        </div>
+        <div class="pf-desc">Practical implementation of core OOP concepts — encapsulation, abstraction, modular design and structured problem solving principles.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">Encapsulation</span><span class="pf-tag">Abstraction</span><span class="pf-tag">Modular Design</span>
+        </div>
+      </a>
+
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="project-file">
+        <div class="pf-top">
+          <span class="pf-icon">🔗</span>
+          <span class="pf-name">OOP-Web-Implementation</span>
+          <span class="pf-lang">HTML · OOP</span>
+        </div>
+        <div class="pf-desc">OOP concepts applied in a web context — bridging backend programming logic with frontend web implementation across environments.</div>
+        <div class="pf-tags">
+          <span class="pf-tag">Web Integration</span><span class="pf-tag">OOP</span><span class="pf-tag">Frontend Logic</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ══ SKILLS WINDOW ══ -->
+  <div class="window" id="skills-window">
+    <div class="window-titlebar" onmousedown="startDrag(event, 'skills-window')">
+      <div class="window-controls">
+        <div class="wc wc-close" onclick="closeWindow('skills-window', 'skills-btn')"></div>
+        <div class="wc wc-min"></div>
+        <div class="wc wc-max"></div>
+      </div>
+      <div class="window-title">⚗️ skills.dat — Loaded</div>
+    </div>
+    <div class="window-body">
+      <div style="margin-bottom:1.2rem;">
+        <div style="font-size:0.6rem;letter-spacing:0.2em;color:var(--amber);margin-bottom:1rem;">PROGRAMMING & DEVELOPMENT</div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">SQL — Queries, Joins, CRUD</span><span class="skill-bar-pct">72%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="72"></div></div></div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">VB.Net — OOP & POP</span><span class="skill-bar-pct">65%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="65"></div></div></div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">HTML5 / CSS3</span><span class="skill-bar-pct">70%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div></div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">JavaScript</span><span class="skill-bar-pct">55%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="55"></div></div></div>
+      </div>
+      <div style="margin-bottom:1.2rem;">
+        <div style="font-size:0.6rem;letter-spacing:0.2em;color:var(--amber);margin-bottom:1rem;">DATABASE & DATA</div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Database Design & Connectivity</span><span class="skill-bar-pct">68%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="68"></div></div></div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Data Cleaning & Validation</span><span class="skill-bar-pct">70%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="70"></div></div></div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Microsoft Access</span><span class="skill-bar-pct">65%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="65"></div></div></div>
+      </div>
+      <div>
+        <div style="font-size:0.6rem;letter-spacing:0.2em;color:var(--amber);margin-bottom:1rem;">BUSINESS & PROJECT</div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Agile / Scrum</span><span class="skill-bar-pct">60%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="60"></div></div></div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">PERT Charts</span><span class="skill-bar-pct">58%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="58"></div></div></div>
+        <div class="skill-bar-item"><div class="skill-bar-header"><span class="skill-bar-name">Porter's 5 Forces</span><span class="skill-bar-pct">60%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" data-width="60"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CERTS WINDOW ══ -->
+  <div class="window" id="certs-window">
+    <div class="window-titlebar" onmousedown="startDrag(event, 'certs-window')">
+      <div class="window-controls">
+        <div class="wc wc-close" onclick="closeWindow('certs-window', 'certs-btn')"></div>
+        <div class="wc wc-min"></div>
+        <div class="wc wc-max"></div>
+      </div>
+      <div class="window-title">📜 certifications — 4 verified</div>
+    </div>
+    <div class="window-body">
+      <div class="cert-card">
+        <div class="cert-seal">🛡️</div>
+        <div>
+          <div class="cert-info-name">Introduction to Cybersecurity</div>
+          <div class="cert-info-issuer">CISCO Networking Academy</div>
+        </div>
+        <div class="cert-info-date">SEP 2025</div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-seal">📊</div>
+        <div>
+          <div class="cert-info-name">Introduction to Data Science</div>
+          <div class="cert-info-issuer">CISCO Networking Academy</div>
+        </div>
+        <div class="cert-info-date">MAY 2025</div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-seal">📈</div>
+        <div>
+          <div class="cert-info-name">Data Analytics Essentials</div>
+          <div class="cert-info-issuer">CISCO Networking Academy</div>
+        </div>
+        <div class="cert-info-date">FEB 2026</div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-seal">🎓</div>
+        <div>
+          <div class="cert-info-name">NQF Level 4 — Information Technology</div>
+          <div class="cert-info-issuer">FalseBay College, Fish Hoek</div>
+        </div>
+        <div class="cert-info-date">2026</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CONTACT WINDOW ══ -->
+  <div class="window" id="contact-window">
+    <div class="window-titlebar" onmousedown="startDrag(event, 'contact-window')">
+      <div class="window-controls">
+        <div class="wc wc-close" onclick="closeWindow('contact-window', 'contact-btn')"></div>
+        <div class="wc wc-min"></div>
+        <div class="wc wc-max"></div>
+      </div>
+      <div class="window-title">🩸 contact.me — Open</div>
+    </div>
+    <div class="window-body">
+      <div style="font-size:0.65rem;color:rgba(212,197,160,0.5);margin-bottom:1.2rem;line-height:1.8;">
+        The Ripper is available for hire.<br>Entry-level IT roles, learnerships, internships, and remote positions welcome.
+      </div>
+      <a href="mailto:mihlemtotywa@gmail.com" class="contact-row" style="color:inherit;text-decoration:none;">
+        <span class="contact-row-icon">📧</span>
+        <div><span class="contact-row-label">Email</span><span class="contact-row-val">mihlemtotywa@gmail.com</span></div>
+      </a>
+      <a href="tel:+27606022293" class="contact-row" style="color:inherit;text-decoration:none;">
+        <span class="contact-row-icon">📞</span>
+        <div><span class="contact-row-label">Phone</span><span class="contact-row-val">(+27) 606 022 293</span></div>
+      </a>
+      <a href="https://linkedin.com/in/mihle-mtotywa-b67314298" target="_blank" class="contact-row" style="color:inherit;text-decoration:none;">
+        <span class="contact-row-icon">💼</span>
+        <div><span class="contact-row-label">LinkedIn</span><span class="contact-row-val">mihle-mtotywa-b67314298</span></div>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="contact-row" style="color:inherit;text-decoration:none;">
+        <span class="contact-row-icon">🐱</span>
+        <div><span class="contact-row-label">GitHub</span><span class="contact-row-val">github.com/VuyoMtotywa-bit</span></div>
+      </a>
+      <div class="contact-row">
+        <span class="contact-row-icon">📍</span>
+        <div><span class="contact-row-label">Location</span><span class="contact-row-val">Cape Town, Western Cape, 7100</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TASKBAR -->
+  <div id="taskbar">
+    <button class="taskbar-start" onclick="openWindow('terminal-window','terminal-btn')">🎩 START</button>
+    <div class="taskbar-apps">
+      <button class="taskbar-btn" id="terminal-btn" onclick="openWindow('terminal-window','terminal-btn')">💀 Terminal</button>
+      <button class="taskbar-btn" id="about-btn" onclick="openWindow('about-window','about-btn')">🎩 About</button>
+      <button class="taskbar-btn" id="projects-btn" onclick="openWindow('projects-window','projects-btn')">🗡️ Projects</button>
+      <button class="taskbar-btn" id="skills-btn" onclick="openWindow('skills-window','skills-btn')">⚗️ Skills</button>
+      <button class="taskbar-btn" id="certs-btn" onclick="openWindow('certs-window','certs-btn')">📜 Certs</button>
+      <button class="taskbar-btn" id="contact-btn" onclick="openWindow('contact-window','contact-btn')">🩸 Contact</button>
+    </div>
+    <div class="taskbar-clock" id="clock">--:-- --<br>CPT</div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div id="welcome-toast">
+  <div class="toast-title">🎩 Welcome, stranger.</div>
+  <div class="toast-msg">JackTheRipper.exe has loaded successfully.<br>Double-click icons or use the taskbar.<br>Try the terminal — type 'help'.</div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// CURSOR
+// ══════════════════════════════════
+const cur = document.getElementById('cursor');
+const curT = document.getElementById('cursor-trail');
+let mx = 0, my = 0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cur.style.left = mx - 5 + 'px';
+  cur.style.top = my - 5 + 'px';
+  setTimeout(() => {
+    curT.style.left = mx - 15 + 'px';
+    curT.style.top = my - 15 + 'px';
+  }, 80);
+});
+
+// ══════════════════════════════════
+// FOG PARTICLES
+// ══════════════════════════════════
+const fp = document.getElementById('fog-particles');
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.style.left = Math.random() * 100 + 'vw';
+  p.style.animationDuration = (Math.random() * 15 + 10) + 's';
+  p.style.animationDelay = (Math.random() * 15) + 's';
+  p.style.width = p.style.height = (Math.random() * 4 + 1) + 'px';
+  fp.appendChild(p);
+}
+
+// ══════════════════════════════════
+// MATRIX RAIN
+// ══════════════════════════════════
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ♠♣♦♥†‡§¶';
+const fontSize = 14;
+let columns = Math.floor(canvas.width / fontSize);
+let drops = Array(columns).fill(1);
+
+function drawMatrix() {
+  ctx.fillStyle = 'rgba(0,0,0,0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#00ff41';
+  ctx.font = fontSize + 'px Share Tech Mono';
+  for (let i = 0; i < drops.length; i++) {
+    const c = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(c, i * fontSize, drops[i] * fontSize);
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    drops[i]++;
+  }
+}
+
+setInterval(drawMatrix, 50);
+
+// ══════════════════════════════════
+// CLOCK
+// ══════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  const opts = { timeZone: 'Africa/Johannesburg', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+  const time = now.toLocaleTimeString('en-ZA', opts);
+  const date = now.toLocaleDateString('en-ZA', { timeZone: 'Africa/Johannesburg', day: '2-digit', month: 'short' });
+  document.getElementById('clock').innerHTML = time + '<br>' + date + ' · CPT';
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ══════════════════════════════════
+// BOOT SEQUENCE
+// ══════════════════════════════════
+const bootLines = [
+  { text: 'JACKTHERIPPER OS v1.888 — INITIALISING...', delay: 0 },
+  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', delay: 200 },
+  { text: '[OK] Loading Victorian Hacker Protocol...', delay: 400 },
+  { text: '[OK] Initialising Matrix Rain Module...', delay: 700 },
+  { text: '[OK] Mounting /projects/PostrGr-SQL-basics', delay: 1000 },
+  { text: '[OK] Mounting /projects/Database-Projects', delay: 1200 },
+  { text: '[OK] Mounting /projects/HTML-CSS-Javascript', delay: 1400 },
+  { text: '[OK] Mounting /projects/OOP-implementations', delay: 1600 },
+  { text: '[OK] Loading CISCO Certifications × 3...', delay: 1800 },
+  { text: '[OK] Verifying NQF Level 4 Credential...', delay: 2100 },
+  { text: '[OK] Cape Town timezone detected: SAST +02:00', delay: 2400 },
+  { text: '[OK] Available for hire: TRUE', delay: 2700 },
+  { text: '[OK] Fog machine activated...', delay: 3000 },
+  { text: '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', delay: 3300 },
+  { text: '🎩 SYSTEM READY. Welcome to the shadows.', delay: 3600 },
+];
+
+function startBoot() {
+  document.getElementById('intro').style.display = 'none';
+  const boot = document.getElementById('boot-screen');
+  boot.style.display = 'block';
+  const bootText = document.getElementById('boot-text');
+
+  bootLines.forEach((line, i) => {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'boot-line';
+      el.textContent = '> ' + line.text;
+      el.style.animation = `bootLine 0.3s ease both`;
+      if (line.text.includes('[OK]')) el.style.color = '#00ff41';
+      if (line.text.includes('READY')) { el.style.color = '#ffb000'; el.style.fontSize = '1rem'; }
+      bootText.appendChild(el);
+      bootText.scrollTop = bootText.scrollHeight;
+    }, line.delay);
+  });
+
+  setTimeout(() => {
+    boot.style.display = 'none';
+    document.getElementById('desktop').style.display = 'block';
+    // Auto-open terminal
+    setTimeout(() => {
+      openWindow('terminal-window', 'terminal-btn');
+      initTerminal();
+    }, 300);
+    // Show toast
+    setTimeout(() => {
+      const toast = document.getElementById('welcome-toast');
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 5000);
+    }, 800);
+    // Animate skill bars when skills opened
+    animateSkillBars();
+  }, 4200);
+}
+
+// ══════════════════════════════════
+// WINDOW MANAGEMENT
+// ══════════════════════════════════
+let zCounter = 100;
+
+function openWindow(id, btnId) {
+  const win = document.getElementById(id);
+  const positions = {
+    'terminal-window': { top: 60, left: 120 },
+    'about-window': { top: 80, left: 200 },
+    'projects-window': { top: 50, left: 160 },
+    'skills-window': { top: 70, left: 180 },
+    'certs-window': { top: 80, left: 170 },
+    'contact-window': { top: 90, left: 190 },
+  };
+
+  if (!win.classList.contains('visible')) {
+    win.classList.add('visible');
+    const pos = positions[id];
+    win.style.top = pos.top + 'px';
+    win.style.left = pos.left + 'px';
+    if (id === 'skills-window') setTimeout(animateSkillBars, 300);
+  }
+
+  bringToFront(id, btnId);
+}
+
+function closeWindow(id, btnId) {
+  document.getElementById(id).classList.remove('visible', 'active');
+  if (btnId) document.getElementById(btnId).classList.remove('active');
+}
+
+function bringToFront(id, btnId) {
+  document.querySelectorAll('.window').forEach(w => w.classList.remove('active'));
+  document.querySelectorAll('.taskbar-btn').forEach(b => b.classList.remove('active'));
+  const win = document.getElementById(id);
+  win.classList.add('active');
+  win.style.zIndex = ++zCounter;
+  if (btnId) document.getElementById(btnId).classList.add('active');
+}
+
+// ══════════════════════════════════
+// DRAG
+// ══════════════════════════════════
+function startDrag(e, id) {
+  const win = document.getElementById(id);
+  bringToFront(id);
+  let startX = e.clientX - win.offsetLeft;
+  let startY = e.clientY - win.offsetTop;
+
+  function onMove(e) {
+    let newLeft = e.clientX - startX;
+    let newTop = e.clientY - startY;
+    newLeft = Math.max(0, Math.min(newLeft, window.innerWidth - 100));
+    newTop = Math.max(0, Math.min(newTop, window.innerHeight - 60));
+    win.style.left = newLeft + 'px';
+    win.style.top = newTop + 'px';
+  }
+
+  function onUp() {
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', onUp);
+  }
+
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('mouseup', onUp);
+}
+
+// ══════════════════════════════════
+// SKILL BARS
+// ══════════════════════════════════
+function animateSkillBars() {
+  document.querySelectorAll('.skill-bar-fill').forEach(bar => {
+    const w = bar.getAttribute('data-width');
+    setTimeout(() => { bar.style.width = w + '%'; }, 200);
+  });
+}
+
+// ══════════════════════════════════
+// TERMINAL
+// ══════════════════════════════════
+const terminalCommands = {
+  help: () => [
+    { t: 'info', v: '╔════════════════════════════════════════╗' },
+    { t: 'info', v: '║     JACKTHERIPPER TERMINAL — HELP      ║' },
+    { t: 'info', v: '╚════════════════════════════════════════╝' },
+    { t: 'result', v: 'whoami         — Identity reveal' },
+    { t: 'result', v: 'ls projects    — List all projects' },
+    { t: 'result', v: 'cat skills     — Display skill tree' },
+    { t: 'result', v: 'cat certs      — Show certifications' },
+    { t: 'result', v: 'contact        — Get contact details' },
+    { t: 'result', v: 'hire me        — Why you should hire me' },
+    { t: 'result', v: 'github         — Open GitHub profile' },
+    { t: 'result', v: 'matrix         — Toggle matrix rain' },
+    { t: 'result', v: 'clear          — Clear terminal' },
+    { t: 'result', v: 'ripper         — ???' },
+  ],
+  whoami: () => [
+    { t: 'success', v: '> Identity: Mihle Vuyo Mtotywa' },
+    { t: 'success', v: '> Alias: JackTheRipper' },
+    { t: 'result', v: '> Location: Cape Town, Western Cape, ZA' },
+    { t: 'result', v: '> Role: IT Graduate | SQL Dev | Helpdesk | Data Analyst' },
+    { t: 'result', v: '> Status: Available for hire ✓' },
+    { t: 'result', v: '> Education: NQF Level 4 — Information Technology' },
+    { t: 'result', v: '> Institution: FalseBay College, Fish Hoek' },
+    { t: 'info', v: '> Certifications: CISCO × 3 (Cybersecurity, Data Science, Analytics)' },
+  ],
+  'ls projects': () => [
+    { t: 'info', v: 'drwxr-xr-x  projects/' },
+    { t: 'result', v: '├── 🗄️  PostrGr-SQL-basics          [SQL · VB.Net · CRUD]' },
+    { t: 'result', v: '├── 🖥️  Database-Projects            [VB.Net · OOP · Windows Forms]' },
+    { t: 'result', v: '├── 🌐  HTML-CSS-Javascript          [HTML · CSS · JavaScript]' },
+    { t: 'result', v: '├── ⚙️  Object-Oriented-Programming  [OOP · Fundamentals]' },
+    { t: 'result', v: '└── 🔗  OOP-Web-Implementation       [HTML · OOP · Frontend]' },
+    { t: 'info', v: '5 projects total — github.com/VuyoMtotywa-bit' },
+  ],
+  'cat skills': () => [
+    { t: 'info', v: '=== SKILL TREE ===' },
+    { t: 'result', v: '[████████░░] SQL            72%' },
+    { t: 'result', v: '[███████░░░] HTML/CSS        70%' },
+    { t: 'result', v: '[██████░░░░] VB.Net          65%' },
+    { t: 'result', v: '[█████░░░░░] JavaScript      55%' },
+    { t: 'result', v: '[███████░░░] Data Cleaning   70%' },
+    { t: 'result', v: '[██████░░░░] Agile/Scrum     60%' },
+    { t: 'result', v: '[██████░░░░] Porter 5 Forces 60%' },
+    { t: 'result', v: '[█████░░░░░] PERT Charts     58%' },
+  ],
+  'cat certs': () => [
+    { t: 'info', v: '=== CERTIFICATIONS ===' },
+    { t: 'success', v: '[VERIFIED] CISCO Introduction to Cybersecurity — Sep 2025' },
+    { t: 'success', v: '[VERIFIED] CISCO Introduction to Data Science — May 2025' },
+    { t: 'success', v: '[VERIFIED] CISCO Data Analytics Essentials — Feb 2026' },
+    { t: 'success', v: '[VERIFIED] NQF Level 4 Certificate in IT — FalseBay College' },
+  ],
+  contact: () => [
+    { t: 'info', v: '=== CONTACT THE RIPPER ===' },
+    { t: 'result', v: '📧 Email:    mihlemtotywa@gmail.com' },
+    { t: 'result', v: '📞 Phone:    (+27) 606 022 293' },
+    { t: 'result', v: '🐱 GitHub:   github.com/VuyoMtotywa-bit' },
+    { t: 'result', v: '💼 LinkedIn: linkedin.com/in/mihle-mtotywa-b67314298' },
+    { t: 'result', v: '📍 Location: Cape Town, ZA — Available for remote & onsite' },
+  ],
+  'hire me': () => [
+    { t: 'info', v: '=== 5 REASONS TO HIRE THE RIPPER ===' },
+    { t: 'success', v: '1. Real GitHub projects — not just claims, actual code' },
+    { t: 'success', v: '2. 3 active CISCO certs — self-driven learning' },
+    { t: 'success', v: '3. Customer service XP from Clicks — communication sorted' },
+    { t: 'success', v: '4. NQF L4 complete — qualified and ready' },
+    { t: 'success', v: '5. Built this entire portfolio from scratch — need more proof?' },
+    { t: 'info', v: '> mihlemtotywa@gmail.com | (+27) 606 022 293' },
+  ],
+  github: () => {
+    window.open('https://github.com/VuyoMtotywa-bit', '_blank');
+    return [{ t: 'success', v: '> Opening github.com/VuyoMtotywa-bit...' }];
+  },
+  matrix: () => {
+    const c = document.getElementById('matrix-canvas');
+    const current = parseFloat(c.style.opacity || '0.07');
+    c.style.opacity = current > 0.1 ? '0.07' : '0.4';
+    return [{ t: 'info', v: '> Matrix rain: ' + (current > 0.1 ? 'NORMAL' : 'INTENSE') }];
+  },
+  clear: () => {
+    document.getElementById('terminal-output').innerHTML = '';
+    return [];
+  },
+  ripper: () => [
+    { t: 'info', v: '🎩  *tips hat*' },
+    { t: 'result', v: '"Good evening. I\'ve been expecting you."' },
+    { t: 'result', v: '"The code never lies. The bugs always hide."' },
+    { t: 'result', v: '"But I always find them."' },
+    { t: 'info', v: '— JackTheRipper, Cape Town, 2026' },
+  ],
+};
+
+function initTerminal() {
+  const output = document.getElementById('terminal-output');
+  const input = document.getElementById('terminal-input');
+
+  const welcome = [
+    { t: 'info', v: '╔══════════════════════════════════════════════╗' },
+    { t: 'info', v: '║   JACKTHERIPPER TERMINAL v1.888              ║' },
+    { t: 'info', v: '║   Mihle Vuyo Mtotywa — Cape Town, ZA         ║' },
+    { t: 'info', v: '╚══════════════════════════════════════════════╝' },
+    { t: 'result', v: 'Type "help" for available commands.' },
+    { t: 'result', v: '' },
+  ];
+
+  welcome.forEach(line => appendLine(line.t, line.v));
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      const cmd = input.value.trim().toLowerCase();
+      if (!cmd) return;
+
+      appendLine('cmd', 'ripper@MVM:~$ ' + cmd);
+
+      const handler = terminalCommands[cmd];
+      if (handler) {
+        const lines = handler();
+        lines.forEach(l => appendLine(l.t, l.v));
+      } else {
+        appendLine('error', 'command not found: ' + cmd + '. Type "help".');
+      }
+
+      appendLine('result', '');
+      input.value = '';
+      output.parentElement.scrollTop = output.parentElement.scrollHeight;
+    }
+  });
+
+  input.focus();
+}
+
+function appendLine(type, text) {
+  const output = document.getElementById('terminal-output');
+  const line = document.createElement('div');
+  line.className = 'terminal-line';
+  if (type === 'cmd') {
+    line.innerHTML = `<span class="prompt">${text}</span>`;
+  } else {
+    line.innerHTML = `<span class="${type}">${text}</span>`;
+  }
+  output.appendChild(line);
+}
+
+// Focus terminal input on click
+document.getElementById('terminal-window')?.addEventListener('click', () => {
+  document.getElementById('terminal-input')?.focus();
+});
+</script>
+</body>
+</html>
