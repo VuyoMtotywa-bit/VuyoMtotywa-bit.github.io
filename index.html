@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mihle Vuyo Mtotywa — IT Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300;1,600&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#08080d;--surface:#0e0e16;--card:#12121c;--card2:#161622;--accent:#c8f060;--accent2:#60c8f0;--accent3:#f060c8;--text:#eeeef5;--muted:#54546a;--border:#1c1c2e;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;overflow-x:hidden;cursor:none;}
+#cur{width:8px;height:8px;background:var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:difference;transition:transform .1s;}
+#cur2{width:32px;height:32px;border:1px solid var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transition:all .25s ease;opacity:.5;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");pointer-events:none;z-index:9000;opacity:.35;}
+nav{position:fixed;top:0;left:0;right:0;padding:1.2rem 4rem;display:flex;justify-content:space-between;align-items:center;z-index:500;background:rgba(8,8,13,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.logo{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:900;font-style:italic;color:var(--accent);letter-spacing:-.02em;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{color:var(--muted);font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--accent);}
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;padding:9rem 4rem 5rem;position:relative;overflow:hidden;gap:4rem;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 80% 50%,rgba(200,240,96,.05) 0%,transparent 60%),radial-gradient(ellipse 40% 60% at 20% 80%,rgba(96,200,240,.04) 0%,transparent 60%);animation:bgShift 12s ease-in-out infinite alternate;}
+@keyframes bgShift{0%{opacity:.6;transform:scale(1)}100%{opacity:1;transform:scale(1.05)}}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(200,240,96,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(200,240,96,.025) 1px,transparent 1px);background-size:72px 72px;}
+.hero-left{position:relative;z-index:2;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);border:1px solid rgba(200,240,96,.25);padding:.35rem .9rem;border-radius:2px;margin-bottom:2rem;animation:fadeUp .7s ease both;}
+.badge-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 2s ease infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero-name{font-family:'Fraunces',serif;font-size:clamp(3.2rem,6vw,6rem);font-weight:900;line-height:.92;letter-spacing:-.04em;margin-bottom:1.8rem;animation:fadeUp .7s .08s ease both;}
+.hero-name em{font-style:italic;color:var(--accent);}
+.hero-name .dim{color:var(--muted);}
+.hero-desc{font-size:.82rem;line-height:1.9;color:rgba(238,238,245,.55);max-width:480px;margin-bottom:2.5rem;animation:fadeUp .7s .16s ease both;}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap;animation:fadeUp .7s .24s ease both;}
+.btn{font-family:'Fraunces',serif;font-weight:600;font-size:.8rem;letter-spacing:.08em;text-decoration:none;padding:.85rem 2.2rem;border-radius:2px;transition:all .25s;display:inline-block;}
+.btn-solid{background:var(--accent);color:var(--bg);}
+.btn-solid:hover{background:#fff;transform:translateY(-2px);box-shadow:0 10px 30px rgba(200,240,96,.25);}
+.btn-outline{border:1px solid var(--border);color:var(--muted);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px);}
+.hero-right{position:relative;z-index:2;animation:fadeUp .7s .3s ease both;}
+.hero-card{background:var(--card);border:1px solid var(--border);padding:2rem;position:relative;overflow:hidden;}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));}
+.hc-label{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:1.5rem;}
+.hc-stat{display:flex;justify-content:space-between;align-items:center;padding:.8rem 0;border-bottom:1px solid var(--border);}
+.hc-stat:last-of-type{border:none;}
+.hc-stat-name{font-size:.72rem;color:rgba(238,238,245,.6);}
+.hc-stat-val{font-size:.72rem;color:var(--accent);}
+.hc-tags{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:1.5rem;}
+.hc-tag{font-size:.58rem;letter-spacing:.1em;border:1px solid var(--border);color:var(--muted);padding:.2rem .6rem;border-radius:2px;}
+.marquee-wrap{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--surface);overflow:hidden;padding:.9rem 0;}
+.marquee-track{display:flex;gap:3rem;white-space:nowrap;animation:marquee 28s linear infinite;}
+@keyframes marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.marquee-item{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);flex-shrink:0;display:flex;align-items:center;gap:.8rem;}
+.marquee-item span{color:var(--accent);font-size:.8rem;}
+section{padding:7rem 4rem;}
+.sec-header{display:flex;align-items:center;gap:1rem;margin-bottom:4rem;}
+.sec-num{font-size:.6rem;color:var(--accent);letter-spacing:.2em;}
+.sec-title{font-family:'Fraunces',serif;font-size:2.2rem;font-weight:900;letter-spacing:-.03em;font-style:italic;}
+.sec-line{flex:1;height:1px;background:var(--border);}
+#projects{background:var(--surface);border-top:1px solid var(--border);}
+.repo-group{margin-bottom:4rem;}
+.repo-label{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding:.8rem 1.2rem;background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);}
+.repo-label-name{font-family:'Fraunces',serif;font-size:.85rem;font-weight:700;font-style:italic;color:var(--accent);}
+.repo-label-count{font-size:.58rem;color:var(--muted);letter-spacing:.1em;margin-left:auto;}
+.repo-label-link{font-size:.58rem;color:var(--muted);text-decoration:none;transition:color .2s;}
+.repo-label-link:hover{color:var(--accent);}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);}
+.proj{background:var(--card);padding:2.5rem;display:flex;flex-direction:column;text-decoration:none;color:inherit;position:relative;overflow:hidden;opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease,background .25s;}
+.proj.visible{opacity:1;transform:translateY(0);}
+.proj:hover{background:var(--card2);}
+.proj::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;transform:scaleX(0);transform-origin:left;transition:transform .35s ease;}
+.proj:hover::after{transform:scaleX(1);}
+.proj.c1::after{background:var(--accent);}
+.proj.c2::after{background:var(--accent2);}
+.proj.c3::after{background:var(--accent3);}
+.proj.c4::after{background:#f0a060;}
+.proj.c5::after{background:#a060f0;}
+.proj-lang{display:inline-block;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;padding:.25rem .6rem;border-radius:2px;margin-bottom:1rem;}
+.l-sql{background:rgba(200,240,96,.1);color:var(--accent);border:1px solid rgba(200,240,96,.25);}
+.l-vb{background:rgba(96,200,240,.1);color:var(--accent2);border:1px solid rgba(96,200,240,.25);}
+.l-web{background:rgba(240,96,200,.1);color:var(--accent3);border:1px solid rgba(240,96,200,.25);}
+.l-oop{background:rgba(240,160,96,.1);color:#f0a060;border:1px solid rgba(240,160,96,.25);}
+.l-js{background:rgba(160,96,240,.1);color:#a060f0;border:1px solid rgba(160,96,240,.25);}
+.proj-name{font-family:'Fraunces',serif;font-size:1.2rem;font-weight:700;font-style:italic;letter-spacing:-.02em;margin-bottom:.3rem;}
+.proj-what{font-size:.58rem;color:var(--accent);letter-spacing:.15em;text-transform:uppercase;margin-bottom:.5rem;}
+.proj-desc{font-size:.73rem;line-height:1.85;color:rgba(238,238,245,.5);margin-bottom:1rem;flex:1;}
+.proj-bullets{list-style:none;margin-bottom:1rem;}
+.proj-bullets li{font-size:.68rem;line-height:1.7;color:rgba(238,238,245,.4);padding-left:1rem;position:relative;margin-bottom:.2rem;}
+.proj-bullets li::before{content:'›';position:absolute;left:0;color:var(--accent);}
+.proj-tags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem;}
+.ptag{font-size:.56rem;letter-spacing:.08em;color:var(--muted);border:1px solid var(--border);padding:.15rem .5rem;border-radius:2px;}
+.proj-cta{font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);display:flex;align-items:center;gap:.5rem;margin-top:auto;transition:gap .2s;}
+.proj:hover .proj-cta{gap:.8rem;}
+.skills-layout{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);}
+.skill-group{background:var(--card);padding:2rem;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.skill-group.visible{opacity:1;transform:translateY(0);}
+.sg-title{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem;}
+.sg-title::after{content:'';flex:1;height:1px;background:rgba(200,240,96,.15);}
+.sk{display:flex;align-items:center;gap:.8rem;margin-bottom:.85rem;}
+.sk-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.sk-name{font-size:.73rem;color:rgba(238,238,245,.6);}
+#certifications{background:var(--surface);border-top:1px solid var(--border);}
+.certs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);}
+.cert{background:var(--card);padding:2rem;display:flex;flex-direction:column;gap:.8rem;opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease,background .25s;}
+.cert.visible{opacity:1;transform:translateY(0);}
+.cert:hover{background:var(--card2);}
+.cert-top{display:flex;align-items:center;gap:1rem;}
+.cert-icon{width:44px;height:44px;background:rgba(200,240,96,.08);border:1px solid rgba(200,240,96,.15);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
+.cert-name{font-family:'Fraunces',serif;font-weight:600;font-style:italic;font-size:.95rem;line-height:1.3;}
+.cert-issuer{font-size:.62rem;color:var(--muted);}
+.cert-date{font-size:.6rem;color:var(--accent);letter-spacing:.15em;border:1px solid rgba(200,240,96,.2);padding:.2rem .6rem;border-radius:2px;align-self:flex-start;}
+.cert-desc{font-size:.68rem;color:rgba(238,238,245,.4);line-height:1.7;}
+.contact-layout{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;}
+.contact-hl{font-family:'Fraunces',serif;font-size:clamp(2.2rem,4.5vw,4rem);font-weight:900;font-style:italic;letter-spacing:-.04em;line-height:.95;margin-bottom:1.5rem;}
+.contact-hl em{color:var(--accent);}
+.contact-sub{font-size:.75rem;line-height:1.9;color:rgba(238,238,245,.45);margin-bottom:2.5rem;}
+.contact-links{display:flex;flex-direction:column;gap:1px;background:var(--border);border:1px solid var(--border);}
+.cl{background:var(--card);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:var(--text);transition:all .2s;}
+.cl:hover{background:var(--card2);padding-left:2rem;}
+.cl-label{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.2rem;}
+.cl-val{font-size:.78rem;}
+.cl-arrow{color:var(--accent);transition:transform .2s;}
+.cl:hover .cl-arrow{transform:translateX(4px);}
+footer{padding:2rem 4rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.ft{font-size:.6rem;color:var(--muted);letter-spacing:.08em;}
+.ft-status{display:flex;align-items:center;gap:.5rem;font-size:.6rem;color:#4ade80;letter-spacing:.1em;}
+.ft-dot{width:5px;height:5px;background:#4ade80;border-radius:50%;animation:blink 2s ease infinite;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:900px){nav{padding:1rem 1.5rem;}.nav-links{display:none;}.hero{grid-template-columns:1fr;padding:7rem 1.5rem 3rem;gap:2.5rem;}section{padding:4rem 1.5rem;}.skills-layout{grid-template-columns:1fr;}.contact-layout{grid-template-columns:1fr;gap:2.5rem;}footer{flex-direction:column;gap:1rem;text-align:center;}.projects-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div id="cur"></div><div id="cur2"></div>
+<nav>
+  <div class="logo">MVM.</div>
+  <ul class="nav-links">
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-left">
+    <div class="hero-badge"><div class="badge-dot"></div>Open to opportunities · Cape Town, ZA</div>
+    <h1 class="hero-name"><span class="dim">Mihle</span><br><em>Mtotywa</em></h1>
+    <p class="hero-desc">Recently qualified IT professional with a NQF Level 4 Certificate in IT. 12 individual projects across 5 GitHub repositories — spanning advanced OOP systems, multi-table databases, and full web applications. Three active CISCO certifications. Ready to contribute from day one.</p>
+    <div class="hero-ctas">
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="btn btn-solid">View GitHub →</a>
+      <a href="#contact" class="btn btn-outline">Get In Touch</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-card">
+      <div class="hc-label">// Quick Profile</div>
+      <div class="hc-stat"><span class="hc-stat-name">Qualification</span><span class="hc-stat-val">NQF Level 4 — IT</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Institution</span><span class="hc-stat-val">FalseBay College</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Certifications</span><span class="hc-stat-val">CISCO × 3</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Projects</span><span class="hc-stat-val">12 Individual</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">GitHub Repos</span><span class="hc-stat-val">5 Repositories</span></div>
+      <div class="hc-stat"><span class="hc-stat-name">Status</span><span class="hc-stat-val" style="color:#4ade80;">● Available Now</span></div>
+      <div class="hc-tags">
+        <span class="hc-tag">SQL</span><span class="hc-tag">VB.Net</span><span class="hc-tag">OOP</span>
+        <span class="hc-tag">HTML/CSS</span><span class="hc-tag">JavaScript</span>
+        <span class="hc-tag">Inheritance</span><span class="hc-tag">Try/Catch</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span>◆</span>Employee Payroll System</div>
+    <div class="marquee-item"><span>◆</span>Multi-Table Database</div>
+    <div class="marquee-item"><span>◆</span>JavaScript Form Validation</div>
+    <div class="marquee-item"><span>◆</span>Abstract Classes & Inheritance</div>
+    <div class="marquee-item"><span>◆</span>Polymorphism</div>
+    <div class="marquee-item"><span>◆</span>Exception Handling</div>
+    <div class="marquee-item"><span>◆</span>Retail Website</div>
+    <div class="marquee-item"><span>◆</span>Loans Management System</div>
+    <div class="marquee-item"><span>◆</span>CISCO Certified × 3</div>
+    <div class="marquee-item"><span>◆</span>Agile & Scrum</div>
+    <div class="marquee-item"><span>◆</span>Employee Payroll System</div>
+    <div class="marquee-item"><span>◆</span>Multi-Table Database</div>
+    <div class="marquee-item"><span>◆</span>JavaScript Form Validation</div>
+    <div class="marquee-item"><span>◆</span>Abstract Classes & Inheritance</div>
+    <div class="marquee-item"><span>◆</span>Polymorphism</div>
+    <div class="marquee-item"><span>◆</span>Exception Handling</div>
+    <div class="marquee-item"><span>◆</span>Retail Website</div>
+    <div class="marquee-item"><span>◆</span>Loans Management System</div>
+    <div class="marquee-item"><span>◆</span>CISCO Certified × 3</div>
+    <div class="marquee-item"><span>◆</span>Agile & Scrum</div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sec-header"><span class="sec-num">01 //</span><h2 class="sec-title">Projects</h2><div class="sec-line"></div></div>
+
+  <div class="repo-group">
+    <div class="repo-label">
+      <span class="repo-label-name">Object-Oriented-Programming-</span>
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="repo-label-link">github.com/VuyoMtotywa-bit →</a>
+      <span class="repo-label-count">5 PROJECTS · 19 COMMITS</span>
+    </div>
+    <div class="projects-grid">
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="proj c2 reveal-p">
+        <span class="proj-lang l-vb">VB.Net · Inheritance · Polymorphism</span>
+        <div class="proj-name">Employee Payroll System</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Advanced OOP payroll system using a class hierarchy. Abstract base defines shared employee properties. Two child classes handle different employment types and override the salary calculation differently — same method name, different results depending on who calls it.</p>
+        <ul class="proj-bullets">
+          <li><code>ClsEmployee</code> marked <code>MustInherit</code> — cannot be instantiated directly</li>
+          <li><code>ClsFullTimeEmployee</code> — monthly pay = Annual Salary ÷ 12</li>
+          <li><code>ClsCasualEmployee</code> — pay = Pay Rate × Hours Worked</li>
+          <li>Both override <code>CalcNetSalary()</code> — textbook polymorphism</li>
+          <li><code>Option Strict On</code> — professional type-safe standard enforced</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">Abstract Classes</span><span class="ptag">Inheritance</span><span class="ptag">Polymorphism</span><span class="ptag">OOP</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="proj c4 reveal-p">
+        <span class="proj-lang l-oop">VB.Net · OOP · Business Logic</span>
+        <div class="proj-name">Salary Increase Calculator</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Calculates post-raise salary from current salary, worker rank, and increase percentage. Logic lives inside a dedicated class — not the form — keeping code clean and reusable. Mirrors real HR salary review calculations.</p>
+        <ul class="proj-bullets">
+          <li>Formula: <code>(increase% ÷ 100 × salary) + salary</code> = new salary</li>
+          <li>Worker rank stored as separate property — extensible for tiered raises</li>
+          <li>Constructor initialises all data members to safe defaults</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">OOP</span><span class="ptag">VB.Net</span><span class="ptag">Properties</span><span class="ptag">Business Logic</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="proj c3 reveal-p">
+        <span class="proj-lang l-oop">VB.Net · OOP · Weighted Calc</span>
+        <div class="proj-name">Student Assessment Calculator</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Accepts four assessment inputs and calculates a weighted final mark plus performance rating. Demonstrates clean separation — inputs go in, the class does the calculation, labels display the result. No logic in the form.</p>
+        <ul class="proj-bullets">
+          <li>Four inputs: Assignment, Formal Test, Practical, Internal College Exam</li>
+          <li><code>CalcFinalMark()</code> applies weighted calculation across all four</li>
+          <li><code>DetermineRating()</code> returns grade based on final mark</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">OOP</span><span class="ptag">Weighted Calc</span><span class="ptag">VB.Net</span><span class="ptag">Data Separation</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="proj c1 reveal-p">
+        <span class="proj-lang l-vb">VB.Net · OOP · 3D Geometry</span>
+        <div class="proj-name">3D Shape Volume Calculator</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Multi-shape calculator computing volumes for Sphere, Cylinder, and Cone in one application. Radio button selection determines which class gets instantiated at runtime — object creation, property assignment, and method invocation in a real UI.</p>
+        <ul class="proj-bullets">
+          <li>Three shapes — each its own class with its own <code>CalcVolume()</code></li>
+          <li>Runtime class selection based on radio button state</li>
+          <li>Results formatted to 2 decimal places via <code>.ToString("N2")</code></li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">OOP</span><span class="ptag">VB.Net</span><span class="ptag">Multiple Classes</span><span class="ptag">Runtime Logic</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming-" target="_blank" class="proj c5 reveal-p">
+        <span class="proj-lang l-vb">VB.Net · Try/Catch · DRY</span>
+        <div class="proj-name">Circular Shapes Calculator</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Circle Area and Circumference calculator with defensive programming throughout. Try/Catch blocks handle invalid input gracefully. Reusable helper methods keep code clean — no copy-pasting logic.</p>
+        <ul class="proj-bullets">
+          <li><code>Try/Catch</code> catches letters, blanks, invalid values — shows error, doesn't crash</li>
+          <li>Reusable <code>ClearControls()</code> method — DRY principle applied</li>
+          <li>Yes/No exit confirmation via reusable <code>LogOut()</code> method</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">Exception Handling</span><span class="ptag">Try/Catch</span><span class="ptag">DRY</span><span class="ptag">OOP</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="repo-group">
+    <div class="repo-label">
+      <span class="repo-label-name">Database-Projects</span>
+      <a href="https://github.com/VuyoMtotywa-bit/Database-Projects" target="_blank" class="repo-label-link">github.com/VuyoMtotywa-bit →</a>
+      <span class="repo-label-count">3 PROJECTS</span>
+    </div>
+    <div class="projects-grid">
+      <a href="https://github.com/VuyoMtotywa-bit/Database-Projects" target="_blank" class="proj c1 reveal-p">
+        <span class="proj-lang l-sql">VB.Net · SQL · OleDb</span>
+        <div class="proj-name">Student Records Database</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Desktop application managing student records in Microsoft Access. Full CRUD — Save, Update, Delete, and Search all implemented. Parameterised SQL queries, live DataGridView display, and consistent connection lifecycle management throughout.</p>
+        <ul class="proj-bullets">
+          <li>Stores StudentNumber, FirstName, Surname, MobileNumber, Email</li>
+          <li>Parameterised queries prevent SQL injection — professional security practice</li>
+          <li>Search results load live into DataGridView table</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">SQL</span><span class="ptag">VB.Net</span><span class="ptag">CRUD</span><span class="ptag">Parameterised</span><span class="ptag">DataGridView</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/Database-Projects" target="_blank" class="proj c2 reveal-p">
+        <span class="proj-lang l-sql">VB.Net · SQL · Multi-Table</span>
+        <div class="proj-name">Kareem's Superette Management</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Full retail shop management system with three database tables managed simultaneously. The most complex project in the portfolio — Customers, Products, and Transactions all handled in one application. Mirrors real point-of-sale system architecture.</p>
+        <ul class="proj-bullets">
+          <li>Three tables — CustomerDetails, ProductDetails, TransactionDetails</li>
+          <li>Full CRUD per table — Save, Update, Delete, Search on customers and products</li>
+          <li>Transactions link CustomerID to ProductID to record purchases</li>
+          <li>MessageBox notifications confirm every operation</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">Multi-Table</span><span class="ptag">SQL</span><span class="ptag">VB.Net</span><span class="ptag">Relational DB</span><span class="ptag">POS Logic</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/Database-Projects" target="_blank" class="proj c3 reveal-p">
+        <span class="proj-lang l-sql">VB.Net · SQL · Option Strict</span>
+        <div class="proj-name">Customer Loans Management</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Loans record management system retrieving all customer loan data from a database into a live DataGridView. Built with the strictest professional coding standards enforced at compiler level — Option Strict and Option Explicit both active.</p>
+        <ul class="proj-bullets">
+          <li>SELECT query executed on button click — results bound to DataGridView</li>
+          <li><code>Option Strict On</code> + <code>Option Explicit On</code> — maximum type safety</li>
+          <li>10-step OleDb lifecycle correctly managed throughout</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">SQL</span><span class="ptag">Option Strict</span><span class="ptag">DataGridView</span><span class="ptag">OleDb</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="repo-group">
+    <div class="repo-label">
+      <span class="repo-label-name">HTML-CSS-Javascript</span>
+      <a href="https://github.com/VuyoMtotywa-bit/HTML-CSS-Javascript" target="_blank" class="repo-label-link">github.com/VuyoMtotywa-bit →</a>
+      <span class="repo-label-count">2 PROJECTS</span>
+    </div>
+    <div class="projects-grid">
+      <a href="https://github.com/VuyoMtotywa-bit/HTML-CSS-Javascript" target="_blank" class="proj c3 reveal-p">
+        <span class="proj-lang l-web">HTML · CSS · Responsive</span>
+        <div class="proj-name">Kareem's Superette Website</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Full multi-page retail website for a superette shop. Complete product catalogue, hero section, order form, and animated statistics — built entirely without frameworks. Two complete CSS versions show genuine iteration and improvement.</p>
+        <ul class="proj-bullets">
+          <li>Sticky navigation with animated section transitions</li>
+          <li>Real product images — Fanta, Willards, Ariel, Huggies, and more</li>
+          <li>Order form with checkboxes, radio buttons, range sliders</li>
+          <li>Fully responsive — mobile, tablet, desktop</li>
+          <li>Two CSS iterations — shows refactoring habit</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">HTML5</span><span class="ptag">CSS3</span><span class="ptag">Flexbox</span><span class="ptag">Grid</span><span class="ptag">Responsive</span><span class="ptag">Animations</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/HTML-CSS-Javascript" target="_blank" class="proj c5 reveal-p">
+        <span class="proj-lang l-js">HTML · CSS · JavaScript Validation</span>
+        <div class="proj-name">YDC Recruitment Registration</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Job seeker registration page with real JavaScript form validation. Validates all fields, focuses the error field on failure, confirms success — a core web development skill demonstrated cleanly and correctly.</p>
+        <ul class="proj-bullets">
+          <li>All 9 SA provinces in dropdown — contextually accurate</li>
+          <li><code>Register()</code> validates: empty fields, mismatched passwords</li>
+          <li>On error — focuses problem field and shows descriptive alert</li>
+          <li>Terms checkbox, sidebar navigation, fully responsive</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">JavaScript</span><span class="ptag">Form Validation</span><span class="ptag">DOM</span><span class="ptag">Responsive</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="repo-group">
+    <div class="repo-label">
+      <span class="repo-label-name">PostrGr-SQL-basics & Object-Oriented-Programming</span>
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="repo-label-link">github.com/VuyoMtotywa-bit →</a>
+      <span class="repo-label-count">2 PROJECTS</span>
+    </div>
+    <div class="projects-grid">
+      <a href="https://github.com/VuyoMtotywa-bit/PostrGr-SQL-basics" target="_blank" class="proj c1 reveal-p">
+        <span class="proj-lang l-sql">SQL · VB.Net · Inventory</span>
+        <div class="proj-name">Product Inventory Database</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Database-connected desktop application managing product and inventory records. Demonstrates the complete cycle of connecting a front-end to a back-end relational database — the fundamental architecture behind most business management software.</p>
+        <ul class="proj-bullets">
+          <li>Full CRUD on product records through the application UI</li>
+          <li>SQL queries filter inventory data based on user input</li>
+          <li>Data validation and error handling throughout</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">SQL</span><span class="ptag">VB.Net</span><span class="ptag">CRUD</span><span class="ptag">Data Validation</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+      <a href="https://github.com/VuyoMtotywa-bit/Object-Oriented-Programming" target="_blank" class="proj c4 reveal-p">
+        <span class="proj-lang l-oop">VB.Net · OOP · Fundamentals</span>
+        <div class="proj-name">OOP Core Principles</div>
+        <div class="proj-what">What it is</div>
+        <p class="proj-desc">Focused project demonstrating all four OOP pillars through practical implementation — the concepts that underpin every modern programming language and framework used in professional software development today.</p>
+        <ul class="proj-bullets">
+          <li>Encapsulation, Abstraction, Inheritance, Polymorphism — all four demonstrated</li>
+          <li>Clean, readable code structure throughout</li>
+          <li>Foundation that all other OOP projects in this portfolio build on</li>
+        </ul>
+        <div class="proj-tags"><span class="ptag">OOP</span><span class="ptag">Encapsulation</span><span class="ptag">Inheritance</span><span class="ptag">Polymorphism</span></div>
+        <span class="proj-cta">View on GitHub →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="sec-header"><span class="sec-num">02 //</span><h2 class="sec-title">Skills</h2><div class="sec-line"></div></div>
+  <div class="skills-layout">
+    <div class="skill-group reveal-s"><div class="sg-title">Programming</div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">SQL — Queries, Joins, CRUD, Parameterised</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">VB.Net — OOP, POP, Windows Forms</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent3)"></div><span class="sk-name">HTML5 & CSS3 — Responsive, Flexbox, Grid</span></div>
+      <div class="sk"><div class="sk-dot" style="background:#f0a060"></div><span class="sk-name">JavaScript — DOM, Validation, Events</span></div>
+    </div>
+    <div class="skill-group reveal-s"><div class="sg-title">OOP Mastery</div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Abstract Classes & MustInherit</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Inheritance & Class Hierarchies</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Polymorphism & Method Overriding</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">Exception Handling — Try/Catch</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent2)"></div><span class="sk-name">DRY Principle — Reusable Methods</span></div>
+    </div>
+    <div class="skill-group reveal-s"><div class="sg-title">Database</div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">Relational Database Design</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">OleDb Connectivity — Full Lifecycle</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">Multi-Table Database Management</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">DataGridView & DataTable Binding</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent)"></div><span class="sk-name">Parameterised Queries — SQL Injection Prevention</span></div>
+    </div>
+    <div class="skill-group reveal-s"><div class="sg-title">Business & Tools</div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent3)"></div><span class="sk-name">Agile Methodologies & Scrum</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent3)"></div><span class="sk-name">PERT Charts & Project Planning</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent3)"></div><span class="sk-name">Porter's Five Forces Analysis</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent3)"></div><span class="sk-name">Git & GitHub — Version Control</span></div>
+      <div class="sk"><div class="sk-dot" style="background:var(--accent3)"></div><span class="sk-name">Visual Studio IDE & Debugging</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CERTS -->
+<section id="certifications">
+  <div class="sec-header"><span class="sec-num">03 //</span><h2 class="sec-title">Certifications</h2><div class="sec-line"></div></div>
+  <div class="certs-grid">
+    <div class="cert reveal-c"><div class="cert-top"><div class="cert-icon">🛡️</div><div><div class="cert-name">Introduction to Cybersecurity</div><div class="cert-issuer">CISCO Networking Academy</div></div></div><div class="cert-date">SEP 2025</div><div class="cert-desc">Threat types, attack vectors, network security principles and safe practices. Directly relevant to SOC Analyst career pathway.</div></div>
+    <div class="cert reveal-c"><div class="cert-top"><div class="cert-icon">📊</div><div><div class="cert-name">Introduction to Data Science</div><div class="cert-issuer">CISCO Networking Academy</div></div></div><div class="cert-date">MAY 2025</div><div class="cert-desc">Data science concepts, the data lifecycle, data types, and how organisations use data to drive decisions.</div></div>
+    <div class="cert reveal-c"><div class="cert-top"><div class="cert-icon">📈</div><div><div class="cert-name">Data Analytics Essentials</div><div class="cert-issuer">CISCO Networking Academy</div></div></div><div class="cert-date">FEB 2026</div><div class="cert-desc">Full analytics process — collection, preparation, analysis, visualisation, and communicating findings to stakeholders.</div></div>
+    <div class="cert reveal-c"><div class="cert-top"><div class="cert-icon">🎓</div><div><div class="cert-name">NQF Level 4 — Information Technology</div><div class="cert-issuer">FalseBay College, Fish Hoek</div></div></div><div class="cert-date">2026</div><div class="cert-desc">Programming, database management, web development, systems analysis, business analysis, and project management.</div></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="border-top:1px solid var(--border);">
+  <div class="contact-layout">
+    <div>
+      <h2 class="contact-hl">Let's<br><em>work.</em></h2>
+      <p class="contact-sub">Open to entry-level IT roles, learnerships, internships, and graduate programmes across Cape Town and remote. Available immediately.</p>
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="btn btn-solid">View GitHub →</a>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:mihlemtotywa@gmail.com" class="cl"><div><span class="cl-label">Email</span><span class="cl-val">mihlemtotywa@gmail.com</span></div><span class="cl-arrow">→</span></a>
+      <a href="tel:+27606022293" class="cl"><div><span class="cl-label">Phone</span><span class="cl-val">(+27) 606 022 293</span></div><span class="cl-arrow">→</span></a>
+      <a href="https://linkedin.com/in/mihle-mtotywa-b67314298" target="_blank" class="cl"><div><span class="cl-label">LinkedIn</span><span class="cl-val">linkedin.com/in/mihle-mtotywa-b67314298</span></div><span class="cl-arrow">→</span></a>
+      <a href="https://github.com/VuyoMtotywa-bit" target="_blank" class="cl"><div><span class="cl-label">GitHub</span><span class="cl-val">github.com/VuyoMtotywa-bit</span></div><span class="cl-arrow">→</span></a>
+      <div class="cl"><div><span class="cl-label">Location</span><span class="cl-val">Cape Town, Western Cape, 7100</span></div><span class="cl-arrow">📍</span></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="ft">© 2026 Mihle Vuyo Mtotywa — IT Portfolio</span>
+  <div class="ft-status"><div class="ft-dot"></div>Available for opportunities</div>
+</footer>
+
+<script>
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+document.addEventListener('mousemove',e=>{
+  cur.style.left=e.clientX-4+'px';cur.style.top=e.clientY-4+'px';
+  setTimeout(()=>{cur2.style.left=e.clientX-16+'px';cur2.style.top=e.clientY-16+'px';},80);
+});
+document.querySelectorAll('a,button').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.transform='scale(2)';cur2.style.transform='scale(1.4)';});
+  el.addEventListener('mouseleave',()=>{cur.style.transform='scale(1)';cur2.style.transform='scale(1)';});
+});
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.08});
+document.querySelectorAll('.reveal-p,.reveal-s,.reveal-c').forEach((el,i)=>{el.style.transitionDelay=(i%3)*.12+'s';obs.observe(el);});
+</script>
+</body>
+</html>
